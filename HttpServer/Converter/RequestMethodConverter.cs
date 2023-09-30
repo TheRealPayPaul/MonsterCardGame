@@ -25,5 +25,22 @@ namespace Server.Converter
                     throw new ArgumentException($"RequestMethodString {requestMethod} is not valid and thus can not be converted!");
             }
         }
+
+        public static string EnumToString(RequestMethod requestMethod)
+        {
+            switch (requestMethod)
+            {
+                case RequestMethod.GET:
+                    return "GET";
+                case RequestMethod.POST:
+                    return "POST";
+                case RequestMethod.PUT:
+                    return "PUT";
+                case RequestMethod.DELETE:
+                    return "DELETE";
+                default:
+                    throw new ArgumentException($"RequestMethod {requestMethod} has no conversion!");
+            }
+        }
     }
 }

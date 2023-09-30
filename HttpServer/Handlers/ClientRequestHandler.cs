@@ -1,4 +1,6 @@
 ﻿using Server.Converter;
+using Server.Enums;
+using Server.Factories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,40 +13,13 @@ namespace Server.Handlers
 {
     internal static class ClientRequestHandler
     {
-        public static void Handle(Socket clientSocket, RequestTree requestTree)
+        public static HttpRequestObject Handle(NetworkStream networkStream)
         {
-            using (NetworkStream networkStream = new(clientSocket))
-            using (StreamWriter streamWriter = new(networkStream))
-            {
-                try
-                {
-                    string rawData = GetRawData(networkStream);
-                    var requestFragments = GetRequestStringFragments(rawData);
-                    HttpRequestObject requestObj;
-                    MapRequestFragments(requestFragments, out requestObj);
-                    EndpointChain? endpointChain = requestTree.GetEndpoint(requestObj);
-                    if (endpointChain == null)
-                    {
-                        Console.WriteLine($"Not Found: 404");
-                        streamWriter.Write("HTTP/1.1 404 Not Found");
-                    }
-                    else
-                    {
-                        HttpResponseObject resObj = endpointChain.Invoke(requestObj);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Internal Server Error: {ex.Message}");
-                    streamWriter.Write("HTTP/1.1 500 Internal Server Error");
-                }
+            string rawData = GetRawData(networkStream);
+            var requestFragments = GetRequestStringFragments(rawData);
+            MapRequestFragments(requestFragments, out HttpRequestObject requestObj);
 
-                streamWriter.WriteLine("HTTP/1.1 200 OK");
-                streamWriter.WriteLine("Server: Paul");
-            }
-
-            clientSocket.Shutdown(SocketShutdown.Both);
-            clientSocket.Close();
+            return requestObj;
         }
 
         private static string GetRawData(NetworkStream networkStream)
@@ -126,7 +101,7 @@ namespace Server.Handlers
                 {
                     string[] requestParameterPair = rawRequestParameter.Split('=');
                     KeyValuePair<string, string> pair = new(requestParameterPair[0], requestParameterPair[1]);
-                    httpRequestObj.RequestParameter.Add(pair);
+                    httpRequestObj.RequestParameters.Add(pair);
                 }
             }
 

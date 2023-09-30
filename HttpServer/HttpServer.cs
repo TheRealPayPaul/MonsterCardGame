@@ -54,7 +54,7 @@ namespace Server
             {
                 Socket clientSock = serverSock.Accept();
 
-                Thread thread = new(() => ClientRequestHandler.Handle(clientSock, _requestTree));
+                Thread thread = new(() => ClientSocketHandler.Handle(clientSock, _requestTree));
                 thread.Start();
             }
         }

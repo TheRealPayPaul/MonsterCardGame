@@ -15,7 +15,7 @@ namespace MonsterCardGame.Controllers
         [HttpGet("{id}")]
         public static HttpResponseObject Get(HttpRequestObject reqObj)
         {
-            Console.WriteLine("User Get");
+            Console.WriteLine($"User Get id: {reqObj.DynamicPathParameters[0].Value}");
             return new HttpResponseObject();
         }
 

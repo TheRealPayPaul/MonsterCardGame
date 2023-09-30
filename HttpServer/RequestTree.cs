@@ -90,6 +90,11 @@ namespace Server
             {
                 RequestTreeNode? nextNode = currentnode.FindChildImplicit(pathFragment);
                 if (nextNode == null) return null;
+
+                // Fill ReqObj with Dynamic Path Parameters
+                if (nextNode.IsVariable)
+                    reqObj.DynamicPathParameters.Add(new(nextNode.Name, pathFragment));
+
                 currentnode = nextNode;
             }
 

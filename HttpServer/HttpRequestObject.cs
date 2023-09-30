@@ -13,12 +13,13 @@ namespace Server
         public string Path { get; set; }
         public string ContentString { get; set; }
         public int? ContentLength { get { return GetContentLength(); } }
-        public List<KeyValuePair<string, string>> RequestParameter { get; } = new();
+        public List<KeyValuePair<string, string>> RequestParameters { get; } = new();
         public List<KeyValuePair<string, string>> Headers { get; } = new();
+        public List<KeyValuePair<string, string>> DynamicPathParameters { get; } = new();
 
         public override string ToString()
         {
-            return $"{RequestType} {Path} {RequestParameter} {Headers.Count}";
+            return $"{RequestType} {Path} {RequestParameters} {Headers.Count}";
         }
 
         private int? GetContentLength()

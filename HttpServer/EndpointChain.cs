@@ -1,4 +1,5 @@
 ﻿using Server.Enums;
+using Server.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,10 +48,8 @@ namespace Server
             }) as HttpResponseObject;
 
             if (resObj == null)
-            {
-                // TODO return 500
-                return new HttpResponseObject();
-            }
+                // TODO throw custom 500 error
+                throw new Exception("[EndpointChain] No HttpResponseObject from Endpoint!");
 
             return resObj;
         }
