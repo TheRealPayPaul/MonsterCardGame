@@ -1,4 +1,5 @@
 ﻿using Server.Enums;
+using Server.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace Server
         public void AddChild(RequestTreeNode node)
         {
             if (node.IsVariable && HasVariableChild)
-                throw new Exception("Variable TreeNode can't be added, since already one exists!");
+                throw new InternalServerException($"[{nameof(RequestTreeNode)}] Variable TreeNode can't be added, since already one exists!");
 
             if (node.IsVariable)
                 _variableChild = node;
@@ -40,7 +41,7 @@ namespace Server
         public void AddEndpointChain(RequestMethod requestMethod, EndpointChain endpointChain)
         {
             if (_endpointChains.ContainsKey(requestMethod))
-                throw new Exception("An enpoint chain already exists for this rout and request method!");
+                throw new InternalServerException($"[{nameof(RequestTreeNode)}] An enpoint chain already exists for this route and request method! .../{Name}; {requestMethod}");
 
             _endpointChains.Add(requestMethod, endpointChain);
         }

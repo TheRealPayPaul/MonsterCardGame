@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Server.Attributes
 {
-    public class HttpPost : Attribute
+    public class HttpDelete : Attribute
     {
         public readonly string Path;
 
-        public HttpPost(string path = "")
+        public HttpDelete(string path = "")
         {
             Path = path;
         }

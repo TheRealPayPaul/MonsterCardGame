@@ -1,4 +1,5 @@
 ﻿using Server.Enums;
+using Server.Exceptions;
 using Server.Factories;
 using System;
 using System.Collections.Generic;
@@ -23,10 +24,19 @@ namespace Server.Handlers
                     
                     EndpointChain? endpointChain = requestTree.GetEndpoint(reqObj);
                     if (endpointChain == null)
-                        // TODO Throw custom 404 error
-                        throw new Exception($"[ClientSocketHandler] EndpointChain Not Found: {reqObj.Path}");
+                        throw new NotFoundException($"[ClientSocketHandler] EndpointChain Not Found: {reqObj.RequestType} {reqObj.Path}");
 
                     resObj = endpointChain.Invoke(reqObj);
+                }
+                catch (BadRequestException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    resObj = HttpResponseFactory.Build(ResponseCode.BadRequest);
+                }
+                catch (NotFoundException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    resObj = HttpResponseFactory.Build(ResponseCode.NotFound);
                 }
                 catch (Exception ex)
                 {

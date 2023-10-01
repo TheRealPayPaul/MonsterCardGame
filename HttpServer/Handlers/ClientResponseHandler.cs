@@ -11,7 +11,7 @@ namespace Server.Handlers
         public static void Handle(StreamWriter streamWriter, HttpResponseObject resObj)
         {
             Console.WriteLine($"[{(int)resObj.ResponseCode}]");
-            streamWriter.Write("HTTP/1.1 200 OK\nServer: Paul\n\n");
+            streamWriter.Write($"HTTP/1.1 {(int)resObj.ResponseCode} OK\nServer: Paul\n\n");
         }
     }
 }

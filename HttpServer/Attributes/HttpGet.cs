@@ -10,14 +10,9 @@ namespace Server.Attributes
     {
         public readonly string Path;
 
-        public HttpGet(string path)
+        public HttpGet(string path = "")
         {
             Path = path;
-        }
-
-        public HttpGet()
-        {
-            Path = "";
         }
     }
 }

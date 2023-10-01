@@ -38,7 +38,7 @@ namespace Server
             foreach (string pathFragment in pathFragments)
             {
                 if (!Regex.IsMatch(pathFragment, @"^{[a-zA-Z0-9$\-_.]+}$|^[a-zA-Z0-9$\-_.]+$"))
-                    throw new Exception($"Path cannot be added to route. Invalid Syntax: {path}");
+                    throw new Exception($"[{nameof(RequestTree)}] Path cannot be added to route. Invalid Syntax: {path}");
             }
 
             // Traverse and add Path

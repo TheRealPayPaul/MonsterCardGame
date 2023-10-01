@@ -1,5 +1,6 @@
 ﻿using Server.Converter;
 using Server.Enums;
+using Server.Exceptions;
 using Server.Factories;
 using System;
 using System.Collections.Generic;
@@ -52,10 +53,10 @@ namespace Server.Handlers
                 // Read Request
                 line = stringReader.ReadLine();
                 if (line == null)
-                    throw new Exception($"[{nameof(GetRequestStringFragments)}] Nothing sent");
+                    throw new BadRequestException($"[{nameof(ClientRequestHandler)}] Nothing sent");
 
                 if (!Regex.IsMatch(line, @"^(GET|POST|PUT|DELETE) .+$", RegexOptions.IgnoreCase))
-                    throw new Exception($"[{nameof(GetRequestStringFragments)}] Request section not valid");
+                    throw new BadRequestException($"[{nameof(ClientRequestHandler)}] Request section not valid");
                 rawRequest = line;
 
                 // Read Headers

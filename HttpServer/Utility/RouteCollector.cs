@@ -1,5 +1,6 @@
 ﻿using Server.Attributes;
 using Server.Enums;
+using Server.Exceptions;
 using Server.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace Server.Utility
             return endpointChains;
         }
 
+        // Return = (apiControllers, apiMiddlewares)
         private static (List<Type>, List<Type>) GatherAllControllersMiddlewares(Assembly assembly)
         {
             List<Type> apiControllers = new();
@@ -32,7 +34,7 @@ namespace Server.Utility
                     {
                         // Check if IMiddleware interface in ApiMiddleware
                         if (type.GetInterface(nameof(IMiddleware)) == null)
-                            throw new Exception($"ApiMiddleware does not implement IMiddleware: {type.Name}");
+                            throw new InternalServerException($"[{nameof(RouteCollector)}] ApiMiddleware does not implement IMiddleware: {type.Name}");
 
                         apiMiddlewares.Add(type);
                     }
@@ -40,7 +42,7 @@ namespace Server.Utility
                     {
                         // Check if static ApiControllerClass
                         if (!type.IsAbstract || !type.IsSealed)
-                            throw new Exception($"ApiController class is not static: {type.Name}");
+                            throw new InternalServerException($"[{nameof(RouteCollector)}] ApiController class is not static: {type.Name}");
 
                         apiControllers.Add(type);
                     }
@@ -57,15 +59,17 @@ namespace Server.Utility
             {
                 ApiController? controllerAttribute = type.GetCustomAttribute(typeof(ApiController)) as ApiController;
                 if (controllerAttribute == null)
-                    throw new Exception($"Controller attribute could not be casted!");
+                    throw new InternalServerException($"[{nameof(RouteCollector)}] Controller attribute could not be casted!");
 
                 foreach (MethodInfo method in type.GetMethods())
                 {
+                    // TODO das geht sicherlich besser.
+                    // Problem sind die vielen Variabeln die benötigt werden.
                     HttpGet? httpGetAttribute = method.GetCustomAttribute(typeof(HttpGet)) as HttpGet;
                     if (httpGetAttribute != null)
                     {
                         if (method.ReturnType != typeof(HttpResponseObject))
-                            throw new Exception($"Endpoint has wrong return Type. {nameof(HttpResponseObject)} needed: {type.Name}; {method.Name}");
+                            throw new InternalServerException($"[{nameof(RouteCollector)}] Endpoint has wrong return Type. '{nameof(HttpResponseObject)}' needed. Current: {type.Name}; {method.Name}");
 
                         string path = Path.Combine(controllerAttribute.Path, httpGetAttribute.Path).Replace("\\", "/");
                         EndpointChain endpointChain = new((type, method));
@@ -76,16 +80,40 @@ namespace Server.Utility
                     HttpPost? httpPostAttribute = method.GetCustomAttribute(typeof(HttpPost)) as HttpPost;
                     if (httpPostAttribute != null)
                     {
+                        if (method.ReturnType != typeof(HttpResponseObject))
+                            throw new InternalServerException($"[{nameof(RouteCollector)}] Endpoint has wrong return Type. '{nameof(HttpResponseObject)}' needed. Current: {type.Name}; {method.Name}");
+
                         string path = Path.Combine(controllerAttribute.Path, httpPostAttribute.Path).Replace("\\", "/");
                         EndpointChain endpointChain = new((type, method));
                         endpointChains.Add((path, RequestMethod.POST, endpointChain));
                         continue;
                     }
 
-                    // TODO PUT and DELETE
+                    HttpPut? httpPutAttribute = method.GetCustomAttribute(typeof(HttpPut)) as HttpPut;
+                    if (httpPutAttribute != null)
+                    {
+                        if (method.ReturnType != typeof(HttpResponseObject))
+                            throw new InternalServerException($"[{nameof(RouteCollector)}] Endpoint has wrong return Type. '{nameof(HttpResponseObject)}' needed. Current: {type.Name}; {method.Name}");
+
+                        string path = Path.Combine(controllerAttribute.Path, httpPutAttribute.Path).Replace("\\", "/");
+                        EndpointChain endpointChain = new((type, method));
+                        endpointChains.Add((path, RequestMethod.PUT, endpointChain));
+                        continue;
+                    }
+
+                    HttpDelete? httpDeleteAttribute = method.GetCustomAttribute(typeof(HttpDelete)) as HttpDelete;
+                    if (httpDeleteAttribute != null)
+                    {
+                        if (method.ReturnType != typeof(HttpResponseObject))
+                            throw new InternalServerException($"[{nameof(RouteCollector)}] Endpoint has wrong return Type. '{nameof(HttpResponseObject)}' needed. Current: {type.Name}; {method.Name}");
+
+                        string path = Path.Combine(controllerAttribute.Path, httpDeleteAttribute.Path).Replace("\\", "/");
+                        EndpointChain endpointChain = new((type, method));
+                        endpointChains.Add((path, RequestMethod.DELETE, endpointChain));
+                        continue;
+                    }
                 }
             }
         }
-
     }
 }
