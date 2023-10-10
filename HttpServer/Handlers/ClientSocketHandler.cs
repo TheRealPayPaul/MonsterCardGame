@@ -23,11 +23,11 @@ namespace Server.Handlers
                     HttpRequestObject reqObj = ClientRequestHandler.Handle(streamReader);
 
                     EndpointChain? endpointChain = requestTree.GetEndpoint(reqObj);
-                    // TODO in GetEndpoint rein geben
                     if (endpointChain == null)
                         throw new NotFoundException($"[ClientSocketHandler] EndpointChain Not Found: {reqObj.RequestType} {reqObj.Path}");
 
-                    resObj = endpointChain.Invoke(reqObj);
+                    object? endpointResult = endpointChain.Invoke(reqObj);
+                    resObj = HttpResponseFactory.Build(endpointResult);
                 }
                 catch (BadRequestException ex)
                 {
@@ -41,7 +41,7 @@ namespace Server.Handlers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[ClientSocketHandler] Caught Error: {ex.Message}");
+                    Console.WriteLine($"[ClientSocketHandler] Caught Error: {ex.Message}\n{ex.StackTrace} ");
                     resObj = HttpResponseFactory.Build(ResponseCode.InternalServerError);
                 }
 

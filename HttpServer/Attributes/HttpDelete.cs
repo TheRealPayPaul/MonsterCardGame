@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Attributes
 {
+    [AttributeUsage(AttributeTargets.Method)]
     public class HttpDelete : Attribute
     {
         public readonly string Path;

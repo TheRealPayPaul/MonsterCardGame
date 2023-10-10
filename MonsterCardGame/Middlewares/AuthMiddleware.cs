@@ -12,7 +12,7 @@ namespace MonsterCardGame.Middlewares
     [ApiMiddleware]
     internal class AuthMiddleware : IMiddleware
     {
-        public HttpResponseObject? Invoke(HttpRequestObject reqObj)
+        public HttpResponseObject? Invoke([RawHttpRequest] HttpRequestObject reqObj)
         {
             Console.WriteLine("AUTH YAY");
             reqObj.Path = "DADADADAWDAWD";

@@ -19,7 +19,7 @@ namespace Server.Handlers
             (string rawData, char[] rawBody) = GetRawData(streamReader);
             var requestFragments = GetRequestStringFragments(rawData);
             MapRequestFragments(requestFragments, out HttpRequestObject requestObj);
-            requestObj.Body = rawBody;
+            requestObj.RawBody = new(rawBody);
 
             return requestObj;
         }
@@ -121,8 +121,7 @@ namespace Server.Handlers
                 foreach (string rawRequestParameter in rawRequestParameters)
                 {
                     string[] requestParameterPair = rawRequestParameter.Split('=');
-                    KeyValuePair<string, string> pair = new(requestParameterPair[0], requestParameterPair[1]);
-                    httpRequestObj.RequestParameters.Add(pair);
+                    httpRequestObj.RequestParameters.Add(requestParameterPair[0], requestParameterPair[1]);
                 }
             }
 
@@ -130,8 +129,7 @@ namespace Server.Handlers
             foreach (string rawHeader in fragments.headers)
             {
                 string[] headerPair = rawHeader.Split(": ");
-                KeyValuePair<string, string> pair = new(headerPair[0], headerPair[1]);
-                httpRequestObj.Headers.Add(pair);
+                httpRequestObj.Headers.Add(headerPair[0], headerPair[1]);
             }
         }
     }

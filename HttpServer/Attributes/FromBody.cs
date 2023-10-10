@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Server.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ApiMiddleware : Attribute
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public class FromBody : Attribute
     {
-
     }
 }

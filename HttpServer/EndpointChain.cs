@@ -1,4 +1,5 @@
-﻿using Server.Enums;
+﻿using Server.Attributes;
+using Server.Enums;
 using Server.Exceptions;
 using Server.Interfaces;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Server
@@ -25,7 +27,7 @@ namespace Server
             _middlewares.Add((type, methodInfo));
         }
 
-        public HttpResponseObject Invoke(HttpRequestObject reqObj)
+        public object? Invoke(HttpRequestObject reqObj)
         {
             // Middleware
             foreach ((Type, MethodInfo) middleware in _middlewares)
@@ -33,28 +35,68 @@ namespace Server
                 object? instance = Activator.CreateInstance(middleware.Item1);
                 if (instance == null)
                 {
-                    throw new InternalServerException("[EndpointChain] Middleware could not be instantiated!");
+                    throw new InternalServerException($"[{nameof(EndpointChain)}] Middleware could not be instantiated!");
                 }
 
-                HttpResponseObject? midResObj = middleware.Item2.Invoke(instance, new[]
-                {
-                    reqObj,
-                }) as HttpResponseObject;
+                HttpResponseObject? midResObj = middleware.Item2.Invoke(instance, GetParameters(middleware.Item2, reqObj)) as HttpResponseObject;
 
                 if (midResObj != null)
-                    return midResObj;
+                    return midResObj; 
             }
 
             // Endpoint
-            HttpResponseObject? resObj = _endpoint.Item2.Invoke(_endpoint.Item1, new[]
-            {
-                reqObj,
-            }) as HttpResponseObject;
-
-            if (resObj == null)
-                throw new InternalServerException("[EndpointChain] No HttpResponseObject from Endpoint!");
+            object? resObj = _endpoint.Item2.Invoke(null, GetParameters(_endpoint.Item2, reqObj));
 
             return resObj;
+        }
+
+        private object?[] GetParameters(MethodInfo methodInfo, HttpRequestObject reqObj)
+        {
+            ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+            object?[] parameters = new object[parameterInfos.Length];
+
+            for (int index=0; index < parameterInfos.Length; index++)
+            {
+                ParameterInfo parameterInfo = parameterInfos[index];
+
+                FromBody? fromBody = parameterInfo.GetCustomAttribute<FromBody>();
+                if (fromBody != null)
+                {
+                    parameters[index] = JsonSerializer.Deserialize(reqObj.RawBody, parameterInfo.ParameterType);
+                    continue;
+                }
+
+                FromPath? fromPath = parameterInfo.GetCustomAttribute<FromPath>();
+                if (fromPath != null)
+                {
+                    reqObj.DynamicPathParameters.TryGetValue(fromPath.Key, out string? value);
+                    if (value != null)
+                        parameters[index] = JsonSerializer.Deserialize(value, parameterInfo.ParameterType);
+
+                    continue;
+                }
+
+                FromRequest? fromRequest = parameterInfo.GetCustomAttribute<FromRequest>();
+                if (fromRequest != null)
+                {
+                    reqObj.RequestParameters.TryGetValue(fromRequest.Key, out string? value);
+                    if (value != null)
+                        parameters[index] = JsonSerializer.Deserialize(value, parameterInfo.ParameterType);
+
+                    continue;
+                }
+
+                RawHttpRequest? rawHttpRequest = parameterInfo.GetCustomAttribute<RawHttpRequest>();
+                if (rawHttpRequest != null)
+                {
+                    parameters[index] = reqObj;
+                    continue;
+                }
+
+                throw new InternalServerException($"[{nameof(EndpointChain)}] Every parameter of a middleware or controller method needs to have an attribute! {methodInfo.DeclaringType?.Name}");
+            }
+
+            return parameters;
         }
     }
 }

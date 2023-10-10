@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Attributes
 {
+    [AttributeUsage(AttributeTargets.Class)]
     public class ApiController : Attribute
     {
         public readonly string Path;

@@ -93,7 +93,7 @@ namespace Server
 
                 // Fill ReqObj with Dynamic Path Parameters
                 if (nextNode.IsVariable)
-                    reqObj.DynamicPathParameters.Add(new(nextNode.Name, pathFragment));
+                    reqObj.DynamicPathParameters.Add(nextNode.Name, pathFragment);
 
                 currentnode = nextNode;
             }

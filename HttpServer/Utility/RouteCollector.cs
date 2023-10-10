@@ -69,9 +69,6 @@ namespace Server.Utility
                     ApplyMiddleware? applyMiddlewareAttribute = method.GetCustomAttribute(typeof(ApplyMiddleware)) as ApplyMiddleware;
                     if (httpGetAttribute != null)
                     {
-                        if (method.ReturnType != typeof(HttpResponseObject))
-                            throw new InternalServerException($"[{nameof(RouteCollector)}] Endpoint has wrong return Type. '{nameof(HttpResponseObject)}' needed. Current: {type.Name}; {method.Name}");
-
                         string path = Path.Combine(controllerAttribute.Path, httpGetAttribute.Path).Replace("\\", "/");
                         EndpointChain endpointChain = new((type, method));
                         if (applyMiddlewareAttribute != null)
