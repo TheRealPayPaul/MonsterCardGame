@@ -15,17 +15,17 @@ namespace Server.Utility
     {
         public static List<(string, RequestMethod, EndpointChain)> CrawlAssembly(Assembly assembly)
         {
-            (List<Type> controllers, List<Type> middlewares) = GatherAllControllersMiddlewares(assembly);
+            (List<Type> controllers, Dictionary<string, Type> middlewares) = GatherAllControllersMiddlewares(assembly);
             BuildEndpointChains(controllers, middlewares, out List<(string, RequestMethod, EndpointChain)> endpointChains);
 
             return endpointChains;
         }
 
         // Return = (apiControllers, apiMiddlewares)
-        private static (List<Type>, List<Type>) GatherAllControllersMiddlewares(Assembly assembly)
+        private static (List<Type>, Dictionary<string, Type>) GatherAllControllersMiddlewares(Assembly assembly)
         {
             List<Type> apiControllers = new();
-            List<Type> apiMiddlewares = new();
+            Dictionary<string, Type> apiMiddlewares = new();
             foreach (Type type in assembly.GetTypes())
                 foreach (CustomAttributeData customAttributeData in type.CustomAttributes)
                 {
@@ -36,7 +36,7 @@ namespace Server.Utility
                         if (type.GetInterface(nameof(IMiddleware)) == null)
                             throw new InternalServerException($"[{nameof(RouteCollector)}] ApiMiddleware does not implement IMiddleware: {type.Name}");
 
-                        apiMiddlewares.Add(type);
+                        apiMiddlewares.Add(type.Name, type);
                     }
                     else if (attributeName == nameof(ApiController))
                     {
@@ -51,7 +51,7 @@ namespace Server.Utility
             return (apiControllers, apiMiddlewares);
         }
 
-        private static void BuildEndpointChains(List<Type> controllers, List<Type> middlewares, out List<(string, RequestMethod, EndpointChain)> endpointChains)
+        private static void BuildEndpointChains(List<Type> controllers, Dictionary<string, Type> middlewares, out List<(string, RequestMethod, EndpointChain)> endpointChains)
         {
             endpointChains = new();
 
@@ -66,6 +66,7 @@ namespace Server.Utility
                     // TODO das geht sicherlich besser.
                     // Problem sind die vielen Variabeln die benötigt werden.
                     HttpGet? httpGetAttribute = method.GetCustomAttribute(typeof(HttpGet)) as HttpGet;
+                    ApplyMiddleware? applyMiddlewareAttribute = method.GetCustomAttribute(typeof(ApplyMiddleware)) as ApplyMiddleware;
                     if (httpGetAttribute != null)
                     {
                         if (method.ReturnType != typeof(HttpResponseObject))
@@ -73,6 +74,22 @@ namespace Server.Utility
 
                         string path = Path.Combine(controllerAttribute.Path, httpGetAttribute.Path).Replace("\\", "/");
                         EndpointChain endpointChain = new((type, method));
+                        if (applyMiddlewareAttribute != null)
+                        {
+                            foreach (string middlewareName in applyMiddlewareAttribute.MiddlewareNames)
+                            {
+                                middlewares.TryGetValue(middlewareName, out Type? middlewareType);
+                                if (middlewareType == null)
+                                    throw new InternalServerException($"[{nameof(RouteCollector)}] Middleware with the name '{middlewareName}' doesn't exist!");
+                                
+                                MethodInfo? middlewareMethodInfo = middlewareType.GetMethod("Invoke");
+                                if (middlewareMethodInfo == null)
+                                    throw new InternalServerException($"[{nameof(RouteCollector)}] Middleware named '{middlewareName}' has no function named 'Invoke'");
+
+                                endpointChain.AddMiddleware(middlewareType, middlewareMethodInfo);
+                            }
+                        }
+
                         endpointChains.Add((path, RequestMethod.GET, endpointChain));
                         continue;
                     }

@@ -8,11 +8,11 @@ namespace Server.Attributes
 {
     public class ApplyMiddleware : Attribute
     {
-        public readonly Type MiddlewareType;
+        public readonly IEnumerable<string> MiddlewareNames;
 
-        public ApplyMiddleware(Type middlewareType)
+        public ApplyMiddleware(string firstMiddlewareName, params string[] middlewareNames)
         {
-            MiddlewareType = middlewareType;
+            MiddlewareNames = new[] { firstMiddlewareName }.Concat(middlewareNames);
         }
     }
 }

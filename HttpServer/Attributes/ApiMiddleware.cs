@@ -8,6 +8,6 @@ namespace Server.Attributes
 {
     public class ApiMiddleware : Attribute
     {
-        
+
     }
 }

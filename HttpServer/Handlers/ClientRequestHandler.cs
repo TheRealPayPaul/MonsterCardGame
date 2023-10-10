@@ -14,36 +14,56 @@ namespace Server.Handlers
 {
     internal static class ClientRequestHandler
     {
-        public static HttpRequestObject Handle(NetworkStream networkStream)
+        public static HttpRequestObject Handle(StreamReader streamReader)
         {
-            string rawData = GetRawData(networkStream);
+            (string rawData, char[] rawBody) = GetRawData(streamReader);
             var requestFragments = GetRequestStringFragments(rawData);
             MapRequestFragments(requestFragments, out HttpRequestObject requestObj);
+            requestObj.Body = rawBody;
 
             return requestObj;
         }
 
-        private static string GetRawData(NetworkStream networkStream)
+        private static (string, char[]) GetRawData(StreamReader streamReader)
         {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
+            string? contentLengthHeader = null;
+            string? line;
             StringBuilder rawDataBuilder = new();
-            while (networkStream.DataAvailable)
+
+            while (!string.IsNullOrEmpty((line = streamReader.ReadLine())))
             {
-                bytesRead = networkStream.Read(buffer, 0, buffer.Length);
-                string s = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                rawDataBuilder.Append(s);
+                rawDataBuilder.Append($"{line}\n");
+                if (line.StartsWith("Content-Length: "))
+                    contentLengthHeader = line;
             }
 
-            return rawDataBuilder.ToString();
+            if (contentLengthHeader == null)
+                return (rawDataBuilder.ToString(), new char[0]);
+
+            int bodyLength = int.Parse(contentLengthHeader.Substring(15) ?? "0");
+
+            if (bodyLength < 1)
+                return (rawDataBuilder.ToString(), new char[0]);
+
+            int offset = 0;
+            char[] rawBody = new char[bodyLength];
+            while(offset < bodyLength)
+            {
+                int bytesRead = streamReader.Read(rawBody, offset, bodyLength - offset);
+                offset += bytesRead;
+
+                if (bytesRead == 0)
+                    break;
+            }
+
+            return (rawDataBuilder.ToString(), rawBody);
         }
 
         private static (string, List<string>, string) GetRequestStringFragments(string rawData)
         {
             using (StringReader stringReader = new(rawData))
             {
-                string line;
+                string? line;
                 bool hasContent = false;
 
                 string rawRequest;

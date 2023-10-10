@@ -13,9 +13,10 @@ namespace MonsterCardGame.Controllers
     internal static class UserController
     {
         [HttpGet("{id}")]
+        [ApplyMiddleware("AuthMiddleware")]
         public static HttpResponseObject Get(HttpRequestObject reqObj)
         {
-            Console.WriteLine($"User Get id: {reqObj.DynamicPathParameters[0].Value}");
+            Console.WriteLine($"User Get id: {reqObj.DynamicPathParameters[0].Value} {reqObj.Path}");
             return new HttpResponseObject();
         }
 

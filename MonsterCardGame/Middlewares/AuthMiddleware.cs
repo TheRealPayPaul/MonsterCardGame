@@ -1,4 +1,5 @@
-﻿using Server.Attributes;
+﻿using Server;
+using Server.Attributes;
 using Server.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,11 @@ namespace MonsterCardGame.Middlewares
     [ApiMiddleware]
     internal class AuthMiddleware : IMiddleware
     {
-        public void Invoke()
+        public HttpResponseObject? Invoke(HttpRequestObject reqObj)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("AUTH YAY");
+            reqObj.Path = "DADADADAWDAWD";
+            return null;
         }
     }
 }

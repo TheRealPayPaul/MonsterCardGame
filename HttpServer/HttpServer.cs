@@ -42,19 +42,14 @@ namespace Server
 
         public void Start()
         {
-            Socket serverSock = new(
-                AddressFamily.InterNetwork,
-                SocketType.Stream,
-                ProtocolType.Tcp
-            );
-            serverSock.Bind(new IPEndPoint(_ipAdress, _port));
-            serverSock.Listen(_maxConnections);
+            TcpListener server = new(new IPEndPoint(_ipAdress, _port));
+            server.Start();
 
             while (true)
             {
-                Socket clientSock = serverSock.Accept();
+                TcpClient client = server.AcceptTcpClient();
 
-                Thread thread = new(() => ClientSocketHandler.Handle(clientSock, _requestTree));
+                Thread thread = new(() => ClientSocketHandler.Handle(client, _requestTree));
                 thread.Start();
             }
         }

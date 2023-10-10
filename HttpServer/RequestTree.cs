@@ -24,7 +24,7 @@ namespace Server
                 path = path.Substring(1);
 
             // Assures no '/' at the end
-            if (path[path.Length - 1] == '/')
+            if (path.Length > 0 && path[path.Length - 1] == '/')
                 path = path.Remove(path.Length - 1);
 
             // Handle root: ""
@@ -75,7 +75,7 @@ namespace Server
                 path = path.Substring(1);
 
             // Assures no '/' at the end
-            if (path[path.Length - 1] == '/')
+            if (path.Length > 0 && path[path.Length - 1] == '/')
                 path = path.Remove(path.Length - 1);
 
             // Handle root: ""

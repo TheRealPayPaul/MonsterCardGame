@@ -27,22 +27,25 @@ namespace Server
 
         public HttpResponseObject Invoke(HttpRequestObject reqObj)
         {
-            // TODO Invoke every middleware
-            //foreach ((Type, MethodInfo) middleware in _middlewares)
-            //{
-            //    // TODO Check if middleware passes
-            //    object? instance = Activator.CreateInstance(middleware.Item1);
-            //    if (instance == null)
-            //    {
-            //        throw new Exception("[EndpointChain] Middleware could not be instantiated!");
-            //    }
+            // Middleware
+            foreach ((Type, MethodInfo) middleware in _middlewares)
+            {
+                object? instance = Activator.CreateInstance(middleware.Item1);
+                if (instance == null)
+                {
+                    throw new InternalServerException("[EndpointChain] Middleware could not be instantiated!");
+                }
 
-            //    middleware.Item2.Invoke(instance, new[]
-            //    {
-            //        reqObj,
-            //    });
-            //}
+                HttpResponseObject? midResObj = middleware.Item2.Invoke(instance, new[]
+                {
+                    reqObj,
+                }) as HttpResponseObject;
 
+                if (midResObj != null)
+                    return midResObj;
+            }
+
+            // Endpoint
             HttpResponseObject? resObj = _endpoint.Item2.Invoke(_endpoint.Item1, new[]
             {
                 reqObj,

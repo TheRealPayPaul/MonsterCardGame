@@ -10,9 +10,10 @@ namespace Server
     public class HttpRequestObject
     {
         public RequestMethod RequestType { get; set; }
-        public string Path { get; set; }
-        public string ContentString { get; set; }
+        public string Path { get; set; } = string.Empty;
+        public string ContentString { get; set; } = string.Empty;
         public int? ContentLength { get { return GetContentLength(); } }
+        public char[] Body { get; set; } = new char[0];
         public List<KeyValuePair<string, string>> RequestParameters { get; } = new();
         public List<KeyValuePair<string, string>> Headers { get; } = new();
         public List<KeyValuePair<string, string>> DynamicPathParameters { get; } = new();
