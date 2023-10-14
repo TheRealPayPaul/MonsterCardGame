@@ -62,6 +62,12 @@ namespace Server
                 FromBody? fromBody = parameterInfo.GetCustomAttribute<FromBody>();
                 if (fromBody != null)
                 {
+                    if (parameterInfo.ParameterType == typeof(string))
+                    {
+                        parameters[index] = reqObj.RawBody;
+                        continue;
+                    }
+
                     parameters[index] = JsonSerializer.Deserialize(reqObj.RawBody, parameterInfo.ParameterType);
                     continue;
                 }
@@ -70,9 +76,16 @@ namespace Server
                 if (fromPath != null)
                 {
                     reqObj.DynamicPathParameters.TryGetValue(fromPath.Key, out string? value);
-                    if (value != null)
-                        parameters[index] = JsonSerializer.Deserialize(value, parameterInfo.ParameterType);
+                    if (value == null)
+                        continue;
 
+                    if (parameterInfo.ParameterType == typeof(string))
+                    {
+                        parameters[index] = value;
+                        continue;
+                    }
+
+                    parameters[index] = JsonSerializer.Deserialize(value, parameterInfo.ParameterType);
                     continue;
                 }
 
@@ -80,15 +93,25 @@ namespace Server
                 if (fromRequest != null)
                 {
                     reqObj.RequestParameters.TryGetValue(fromRequest.Key, out string? value);
-                    if (value != null)
-                        parameters[index] = JsonSerializer.Deserialize(value, parameterInfo.ParameterType);
+                    if (value == null)
+                        continue;
 
+                    if (parameterInfo.ParameterType == typeof(string))
+                    {
+                        parameters[index] = value;
+                        continue;
+                    }
+
+                    parameters[index] = JsonSerializer.Deserialize(value, parameterInfo.ParameterType);
                     continue;
                 }
 
                 RawHttpRequest? rawHttpRequest = parameterInfo.GetCustomAttribute<RawHttpRequest>();
                 if (rawHttpRequest != null)
                 {
+                    if (parameterInfo.ParameterType != typeof(HttpRequestObject))
+                        throw new InternalServerException($"[{nameof(EndpointChain)}]");
+
                     parameters[index] = reqObj;
                     continue;
                 }

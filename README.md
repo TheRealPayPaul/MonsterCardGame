@@ -2,4 +2,5 @@
 
 SWEN1 Semsterprojekt
 
-Response Parser Fehlt
+Nice to have: Beim starten der APP schauen ob eh alle Middlewares und Controller Methods custome Attribute besitzen.
+Potentieller Bug: App schmiert ab, wenn lange mit ihr nichts gemacht wird. Vlt weil der Socket einer Request nicht richtig geschlossen wird.

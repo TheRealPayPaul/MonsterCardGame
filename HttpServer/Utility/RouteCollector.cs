@@ -55,79 +55,83 @@ namespace Server.Utility
         {
             endpointChains = new();
 
-            foreach (Type type in controllers)
+            foreach (Type controllerType in controllers)
             {
-                ApiController? controllerAttribute = type.GetCustomAttribute(typeof(ApiController)) as ApiController;
+                ApiController? controllerAttribute = controllerType.GetCustomAttribute(typeof(ApiController)) as ApiController;
                 if (controllerAttribute == null)
                     throw new InternalServerException($"[{nameof(RouteCollector)}] Controller attribute could not be casted!");
 
-                foreach (MethodInfo method in type.GetMethods())
+                foreach (MethodInfo method in controllerType.GetMethods())
                 {
-                    // TODO das geht sicherlich besser.
-                    // Problem sind die vielen Variabeln die benötigt werden.
-                    HttpGet? httpGetAttribute = method.GetCustomAttribute(typeof(HttpGet)) as HttpGet;
-                    ApplyMiddleware? applyMiddlewareAttribute = method.GetCustomAttribute(typeof(ApplyMiddleware)) as ApplyMiddleware;
-                    if (httpGetAttribute != null)
+                    EndpointChainParameters parameters = new()
                     {
-                        string path = Path.Combine(controllerAttribute.Path, httpGetAttribute.Path).Replace("\\", "/");
-                        EndpointChain endpointChain = new((type, method));
-                        if (applyMiddlewareAttribute != null)
-                        {
-                            foreach (string middlewareName in applyMiddlewareAttribute.MiddlewareNames)
-                            {
-                                middlewares.TryGetValue(middlewareName, out Type? middlewareType);
-                                if (middlewareType == null)
-                                    throw new InternalServerException($"[{nameof(RouteCollector)}] Middleware with the name '{middlewareName}' doesn't exist!");
-                                
-                                MethodInfo? middlewareMethodInfo = middlewareType.GetMethod("Invoke");
-                                if (middlewareMethodInfo == null)
-                                    throw new InternalServerException($"[{nameof(RouteCollector)}] Middleware named '{middlewareName}' has no function named 'Invoke'");
+                        method = method,
+                        controllerAttribute = controllerAttribute,
+                        controllerType = controllerType,
+                        endpointChains = endpointChains,
+                        middlewares = middlewares,
+                    };
 
-                                endpointChain.AddMiddleware(middlewareType, middlewareMethodInfo);
-                            }
-                        }
+                    parameters.methodAttributeType = typeof(HttpGet);
+                    parameters.requestMethod = RequestMethod.GET;
+                    if (BuildEndpointChain(parameters)) continue;
 
-                        endpointChains.Add((path, RequestMethod.GET, endpointChain));
-                        continue;
-                    }
+                    parameters.methodAttributeType = typeof(HttpPost);
+                    parameters.requestMethod = RequestMethod.POST;
+                    if (BuildEndpointChain(parameters)) continue;
 
-                    HttpPost? httpPostAttribute = method.GetCustomAttribute(typeof(HttpPost)) as HttpPost;
-                    if (httpPostAttribute != null)
-                    {
-                        if (method.ReturnType != typeof(HttpResponseObject))
-                            throw new InternalServerException($"[{nameof(RouteCollector)}] Endpoint has wrong return Type. '{nameof(HttpResponseObject)}' needed. Current: {type.Name}; {method.Name}");
+                    parameters.methodAttributeType = typeof(HttpPut);
+                    parameters.requestMethod = RequestMethod.PUT;
+                    if (BuildEndpointChain(parameters)) continue;
 
-                        string path = Path.Combine(controllerAttribute.Path, httpPostAttribute.Path).Replace("\\", "/");
-                        EndpointChain endpointChain = new((type, method));
-                        endpointChains.Add((path, RequestMethod.POST, endpointChain));
-                        continue;
-                    }
-
-                    HttpPut? httpPutAttribute = method.GetCustomAttribute(typeof(HttpPut)) as HttpPut;
-                    if (httpPutAttribute != null)
-                    {
-                        if (method.ReturnType != typeof(HttpResponseObject))
-                            throw new InternalServerException($"[{nameof(RouteCollector)}] Endpoint has wrong return Type. '{nameof(HttpResponseObject)}' needed. Current: {type.Name}; {method.Name}");
-
-                        string path = Path.Combine(controllerAttribute.Path, httpPutAttribute.Path).Replace("\\", "/");
-                        EndpointChain endpointChain = new((type, method));
-                        endpointChains.Add((path, RequestMethod.PUT, endpointChain));
-                        continue;
-                    }
-
-                    HttpDelete? httpDeleteAttribute = method.GetCustomAttribute(typeof(HttpDelete)) as HttpDelete;
-                    if (httpDeleteAttribute != null)
-                    {
-                        if (method.ReturnType != typeof(HttpResponseObject))
-                            throw new InternalServerException($"[{nameof(RouteCollector)}] Endpoint has wrong return Type. '{nameof(HttpResponseObject)}' needed. Current: {type.Name}; {method.Name}");
-
-                        string path = Path.Combine(controllerAttribute.Path, httpDeleteAttribute.Path).Replace("\\", "/");
-                        EndpointChain endpointChain = new((type, method));
-                        endpointChains.Add((path, RequestMethod.DELETE, endpointChain));
-                        continue;
-                    }
+                    parameters.methodAttributeType = typeof(HttpDelete);
+                    parameters.requestMethod = RequestMethod.DELETE;
+                    if (BuildEndpointChain(parameters)) continue;
                 }
             }
+        }
+
+        struct EndpointChainParameters
+        {
+            public Type methodAttributeType;
+            public RequestMethod requestMethod;
+
+            public MethodInfo method;
+            public ApiController controllerAttribute;
+            public Type controllerType;
+            public List<(string, RequestMethod, EndpointChain)> endpointChains;
+            public Dictionary<string, Type> middlewares;
+        }
+
+        private static bool BuildEndpointChain(EndpointChainParameters parameters)
+        {
+            IHttpMethod? httpMethodAttribute = parameters.method.GetCustomAttribute(parameters.methodAttributeType) as IHttpMethod;
+            ApplyMiddleware? applyMiddlewareAttribute = parameters.method.GetCustomAttribute(typeof(ApplyMiddleware)) as ApplyMiddleware;
+            if (httpMethodAttribute != null)
+            {
+                string path = Path.Combine(parameters.controllerAttribute.Path, httpMethodAttribute.GetPath()).Replace("\\", "/");
+                EndpointChain endpointChain = new((parameters.controllerType, parameters.method));
+                if (applyMiddlewareAttribute != null)
+                {
+                    foreach (string middlewareName in applyMiddlewareAttribute.MiddlewareNames)
+                    {
+                        parameters.middlewares.TryGetValue(middlewareName, out Type? middlewareType);
+                        if (middlewareType == null)
+                            throw new InternalServerException($"[{nameof(RouteCollector)}] Middleware with the name '{middlewareName}' doesn't exist!");
+
+                        MethodInfo? middlewareMethodInfo = middlewareType.GetMethod("Invoke");
+                        if (middlewareMethodInfo == null)
+                            throw new InternalServerException($"[{nameof(RouteCollector)}] Middleware named '{middlewareName}' has no function named 'Invoke'");
+
+                        endpointChain.AddMiddleware(middlewareType, middlewareMethodInfo);
+                    }
+                }
+
+                parameters.endpointChains.Add((path, parameters.requestMethod, endpointChain));
+                return true;
+            }
+
+            return false;
         }
     }
 }

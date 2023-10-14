@@ -20,7 +20,10 @@ namespace Server.Handlers
             streamWriter.WriteLine($"Content-Length: {resObj.ContentLength}");
             streamWriter.WriteLine($"Content-Type: {resObj.ContentType}");
             streamWriter.WriteLine();
-            streamWriter.WriteLine(resObj.Content);
+            if (resObj.ContentLength > 0)
+            {
+                streamWriter.WriteLine(resObj.Content);
+            }
         }
     }
 }

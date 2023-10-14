@@ -14,14 +14,15 @@ namespace MonsterCardGame.Controllers
     {
         [HttpGet("{id}")]
         [ApplyMiddleware("AuthMiddleware")]
-        public static object Get([RawHttpRequest] HttpRequestObject reqObj, [FromPath("id")] int id)
+        public static object Get([RawHttpRequest] HttpRequestObject reqObj, [FromPath("id")] string id)
         {
             Console.WriteLine($"User Get id: {id} {reqObj.Path}");
             return new ActionResult() { ResponseCode = ResponseCode.ImATeapot, Content = reqObj };
         }
 
-        [HttpGet]
-        public static void Post(HttpRequestObject reqObj)
+        [HttpPost]
+        [ApplyMiddleware("AuthMiddleware")]
+        public static void Post([RawHttpRequest] HttpRequestObject reqObj)
         {
             Console.WriteLine("User Post");
             //return new HttpResponseObject() { ResponseCode = ResponseCode.ImATeapot };
