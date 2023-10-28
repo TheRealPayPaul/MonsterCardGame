@@ -12,6 +12,8 @@ namespace MonsterCardGame
 {
     internal class Program
     {
+        public const string CONNECTION_STRING = "Host=localhost;Database=MonsterCardGame;Username=admin;Password=admin;Persist Security Info=True";
+
         static void Main(string[] args)
         {
             HttpServer server = new(IPAddress.Loopback, 8080);

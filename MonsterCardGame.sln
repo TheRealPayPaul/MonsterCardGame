@@ -7,12 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonsterCardGame", "MonsterC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{AB333B51-0569-4F1C-92E5-DFE375081522}"
 	ProjectSection(SolutionItems) = preProject
+		DB.sql = DB.sql
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "HttpServer\Server.csproj", "{AA6E52C4-FB0A-46A8-9C92-094A704BFDB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "HttpServer\Server.csproj", "{AA6E52C4-FB0A-46A8-9C92-094A704BFDB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTO", "DTO\DTO.csproj", "{3E7A5D9F-F040-4020-9EF6-D879A4D8D4B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTO", "DTO\DTO.csproj", "{3E7A5D9F-F040-4020-9EF6-D879A4D8D4B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerTest", "ServerTest\ServerTest.csproj", "{FC9D9230-D66B-4980-BB66-7964D01013A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +35,10 @@ Global
 		{3E7A5D9F-F040-4020-9EF6-D879A4D8D4B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E7A5D9F-F040-4020-9EF6-D879A4D8D4B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E7A5D9F-F040-4020-9EF6-D879A4D8D4B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC9D9230-D66B-4980-BB66-7964D01013A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC9D9230-D66B-4980-BB66-7964D01013A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC9D9230-D66B-4980-BB66-7964D01013A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC9D9230-D66B-4980-BB66-7964D01013A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

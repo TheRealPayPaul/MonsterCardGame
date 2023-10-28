@@ -5,7 +5,7 @@ CREATE TABLE users (
 	coins INT NOT NULL DEFAULT 0,
 	elo INT NOT NULL DEFAULT 0,
 	wins INT NOT NULL DEFAULT 0,
-	losses INT NOT NULL DEFAULT 0,
+	losses INT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE cards (
@@ -17,14 +17,14 @@ CREATE TABLE cards (
 	is_in_trade BOOLEAN NOT NULL DEFAULT FALSE,
 	deck_pos INT,
 	description TEXT NOT NULL,
-	fk_owner_id INT REFERENCES users (user_id),
+	fk_owner_id INT REFERENCES users (user_id)
 );
 
 CREATE TABLE trades (
 	trade_id SERIAL PRIMARY KEY,
 	fk_offered_card_id INT REFERENCES cards (card_id),
 	wanted_card_type VARCHAR NOT NULL,
-	wanted_min_damage INT NOT NULL,
+	wanted_min_damage INT NOT NULL
 );
 
 CREATE TABLE transactions (
@@ -32,7 +32,7 @@ CREATE TABLE transactions (
 	fk_user_id INT REFERENCES users (user_id),
 	coins_spent INT NOT NULL,
 	description TEXT NOT NULL,
-	timestamp TIMESTAMPTZ NOT NULL,
+	timestamp TIMESTAMPTZ NOT NULL
 );
 
 CREATE VIEW trade_overviews AS
