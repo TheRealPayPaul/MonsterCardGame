@@ -6,23 +6,13 @@ using System.Threading.Tasks;
 
 namespace MonsterCardGame.Models
 {
-    public class User
+    internal class User
     {
-        public string Username { get; private set; }
-        public CardStack CardStack { get; private set; }
-        public int Coins { get; private set; }
-        public int Elo { get; private set; }
-        public int Wins { get; private set; }
-        public int Losses { get; private set; }
-
-        public User(string username, CardStack cardStack, int coins, int elo, int wins, int losses) 
-        {
-            Username = username;
-            CardStack = cardStack;
-            Coins = coins;
-            Elo = elo;
-            Wins = wins;
-            Losses = losses;
-        }
+        public int Id { get; set; } = -1;
+        public string Username { get; set; } = string.Empty;
+        public int Coins { get; set; }
+        public int Elo { get; set; }
+        public int Wins { get; set; }
+        public int Losses { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonsterCardGame.DTO
+namespace DTO
 {
     public class Card
     {

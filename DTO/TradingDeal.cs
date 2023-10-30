@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonsterCardGame.DTO
+namespace DTO
 {
     public class TradingDeal
     {
         public string Id { get; set; }
         public string CardToTrade { get; set; }
         public string Type { get; set; }
-        public float MinimumDamage { get; set; }
+        public int MinimumDamage { get; set; }
     }
 }
