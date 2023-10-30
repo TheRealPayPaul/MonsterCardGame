@@ -45,6 +45,8 @@ namespace Server
             TcpListener server = new(new IPEndPoint(_ipAdress, _port));
             server.Start();
 
+            Console.WriteLine($"Listening on port {_port}...");
+
             while (true)
             {
                 TcpClient client = server.AcceptTcpClient();

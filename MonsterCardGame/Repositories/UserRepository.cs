@@ -25,7 +25,7 @@ namespace MonsterCardGame.Repositories
             RepositoryUtilities.AddParameter(command, "coins", DbType.Int32, coins);
 
             int userId = Convert.ToInt32(command.ExecuteScalar());
-            User? user = Select(userId);
+            User? user = SelectById(userId);
 
             if (user == null)
                 throw new Exception($"[{nameof(UserRepository)}] Couldn't fetch inserted User");
