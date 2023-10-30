@@ -11,6 +11,8 @@ namespace MonsterCardGame.Controllers
     [ApiController("Auth")]
     public static class AuthController
     {
+        public const int TTL_MINUTES = 10;
+
         [HttpPost("Login")]
         public static object PostLogin([FromBody] UserCredentials credentials)
         {
@@ -20,7 +22,7 @@ namespace MonsterCardGame.Controllers
                 if (user == null)
                     return new ActionResult() { ResponseCode = ResponseCode.BadRequest };
 
-                return PJWToken.CreateToken(user, DateTime.Now.AddMinutes(10), Program.PJWT_SECRET);
+                return PJWToken.CreateToken(user, DateTime.Now.AddMinutes(TTL_MINUTES), Program.PJWT_SECRET);
             }
             catch (Exception ex)
             {
@@ -43,7 +45,7 @@ namespace MonsterCardGame.Controllers
 
                 User user = UserRepository.Create(credentials.Username, credentials.Password, Program.STARTING_COIN_AMOUNT);
 
-                return PJWToken.CreateToken(user, DateTime.Now.AddMinutes(10), Program.PJWT_SECRET);
+                return PJWToken.CreateToken(user, DateTime.Now.AddMinutes(TTL_MINUTES), Program.PJWT_SECRET);
             }
             catch (Exception ex)
             {
