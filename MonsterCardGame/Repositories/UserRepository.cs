@@ -12,16 +12,16 @@ namespace MonsterCardGame.Repositories
 {
     internal static class UserRepository
     {
-        public static User Create(string username, string password_hash, int coins)
+        public static User Create(string username, string password, int coins)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
             dbConnection.Open();
 
-            command.CommandText = "INSERT INTO users (username, password, coins) VALUES (@username, @password, @coins); SELECT SCOPE_IDENTITY();";
+            command.CommandText = "INSERT INTO users (username, password, coins) VALUES (@username, @password, @coins) RETURNING user_id;";
 
             RepositoryUtilities.AddParameter(command, "username", DbType.String, username);
-            RepositoryUtilities.AddParameter(command, "password_hash", DbType.String, password_hash);
+            RepositoryUtilities.AddParameter(command, "password", DbType.String, password);
             RepositoryUtilities.AddParameter(command, "coins", DbType.Int32, coins);
 
             int userId = Convert.ToInt32(command.ExecuteScalar());
@@ -64,7 +64,7 @@ namespace MonsterCardGame.Repositories
             using IDbCommand command = dbConnection.CreateCommand();
             dbConnection.Open();
 
-            command.CommandText = "SELECT user_id, username, coins, elo, wins, losses FROM users WHERE username = @username && password = @password";
+            command.CommandText = "SELECT user_id, username, coins, elo, wins, losses FROM users WHERE username = @username AND password = @password";
 
             RepositoryUtilities.AddParameter(command, "username", DbType.String, username);
             RepositoryUtilities.AddParameter(command, "password", DbType.String, password_hash);
@@ -108,6 +108,31 @@ namespace MonsterCardGame.Repositories
             }
 
             return users;
+        }
+
+        public static User? SelectByUsername(string username)
+        {
+            using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
+            using IDbCommand command = dbConnection.CreateCommand();
+            dbConnection.Open();
+
+            command.CommandText = "SELECT user_id, username, coins, elo, wins, losses FROM users WHERE username = @username";
+
+            RepositoryUtilities.AddParameter(command, "username", DbType.String, username);
+
+            IDataReader reader = command.ExecuteReader();
+            if (!reader.Read())
+                return null;
+
+            return new User()
+            {
+                Id = reader.GetInt32(0),
+                Username = reader.GetString(1),
+                Coins = reader.GetInt32(2),
+                Elo = reader.GetInt32(3),
+                Wins = reader.GetInt32(4),
+                Losses = reader.GetInt32(5),
+            };
         }
     }
 }

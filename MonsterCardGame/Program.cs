@@ -13,6 +13,8 @@ namespace MonsterCardGame
     internal class Program
     {
         public const string CONNECTION_STRING = "Host=localhost;Database=MonsterCardGame;Username=admin;Password=admin;Persist Security Info=True";
+        public const int STARTING_COIN_AMOUNT = 20;
+        public const string PJWT_SECRET = "SuperSecret";
 
         static void Main(string[] args)
         {
