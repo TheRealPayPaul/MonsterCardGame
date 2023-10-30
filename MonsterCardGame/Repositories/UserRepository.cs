@@ -33,7 +33,7 @@ namespace MonsterCardGame.Repositories
             return user;
         }
 
-        public static User? Select(int id)
+        public static User? SelectById(int id)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -58,7 +58,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public static User? Select(string username, string password_hash)
+        public static User? SelectByCredentials(string username, string password_hash)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -84,7 +84,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public static IEnumerable<User> Select()
+        public static IEnumerable<User> SelectAll()
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();

@@ -14,7 +14,6 @@ CREATE TABLE cards (
 	damage INT NOT NULL,
 	element_type VARCHAR NOT NULL,
 	card_type VARCHAR NOT NULL,
-	is_in_trade BOOLEAN NOT NULL DEFAULT FALSE,
 	deck_pos INT,
 	description TEXT NOT NULL,
 	fk_owner_id INT REFERENCES users (user_id)

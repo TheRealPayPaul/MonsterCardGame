@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonsterCardGame.Models
 {
-    public class User
+    internal class User
     {
         public int Id { get; set; } = -1;
         public string Username { get; set; } = string.Empty;
