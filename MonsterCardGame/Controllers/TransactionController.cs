@@ -20,7 +20,7 @@ namespace MonsterCardGame.Controllers
     {
         [HttpPost("packages")]
         [ApplyMiddleware(nameof(AuthMiddleware))]
-        public static object packages([FromSession] TokenContent tokenContent)
+        public static object Packages([FromSession] TokenContent tokenContent)
         {
             if (tokenContent == null)
                 return ResponseCode.Unauthorized;

@@ -3,6 +3,7 @@ using MonsterCardGame.Models.DB;
 using MonsterCardGame.Utilities;
 using Npgsql;
 using System.Data;
+using System.Reflection.PortableExecutable;
 
 namespace MonsterCardGame.Repositories
 {
@@ -24,13 +25,13 @@ namespace MonsterCardGame.Repositories
 
             if ((options & SelectOwnerOptions.OnlyDeck) == SelectOwnerOptions.OnlyDeck)
             {
-                command.CommandText = "SELECT card_id, name, damage, element_type, card_type, deck_pos, description, fk_owner_id FROM cards" +
-                                      "WHERE fk_owner_id = @fk_owner_id";
+                command.CommandText = "SELECT card_id, name, damage, element_type, card_type, deck_pos, description, fk_owner_id FROM cards " +
+                                      "WHERE fk_owner_id = @fk_owner_id AND deck_pos IS NOT NULL";
             }
             else
             {
-                command.CommandText = "SELECT card_id, name, damage, element_type, card_type, deck_pos, description, fk_owner_id FROM cards" +
-                                      "WHERE fk_owner_id = @fk_owner_id AND deck_pos NOT NULL";
+                command.CommandText = "SELECT card_id, name, damage, element_type, card_type, deck_pos, description, fk_owner_id FROM cards " +
+                                      "WHERE fk_owner_id = @fk_owner_id";
             }
 
             RepositoryUtilities.AddParameter(command, "fk_owner_id", DbType.Int32, ownerId);
@@ -67,9 +68,9 @@ namespace MonsterCardGame.Repositories
             IEnumerable<Card> currentDeck = SelectAllOfUser(newDeck[0].OwnerId, SelectOwnerOptions.OnlyDeck);
 
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
+            dbConnection.Open();
             using IDbTransaction transaction = dbConnection.BeginTransaction();
             using IDbCommand command = dbConnection.CreateCommand();
-            dbConnection.Open();
 
             try
             {
@@ -105,6 +106,35 @@ namespace MonsterCardGame.Repositories
                 transaction.Rollback();
                 return false;
             }
+        }
+
+        public static Card? SelectById(int cardId, int ownerId)
+        {
+            using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
+            using IDbCommand command = dbConnection.CreateCommand();
+            dbConnection.Open();
+
+            command.CommandText = "SELECT card_id, name, damage, element_type, card_type, deck_pos, description, fk_owner_id FROM cards " +
+                                  "WHERE card_id = @card_id AND fk_owner_id = @fk_owner_id;";
+
+            RepositoryUtilities.AddParameter(command, "card_id", DbType.Int32, cardId);
+            RepositoryUtilities.AddParameter(command, "fk_owner_id", DbType.Int32, ownerId);
+
+            IDataReader reader = command.ExecuteReader();
+            if (!reader.Read())
+                return null;
+
+            return new Card()
+            {
+                Id = reader.GetInt32(0),
+                Name = reader.GetString(1),
+                Damage = reader.GetInt32(2),
+                ElementType = ElementTypeConverter.ToEnum(reader.GetString(3)),
+                Type = CardTypeConverter.ToEnum(reader.GetString(4)),
+                DeckPos = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                Description = reader.GetString(6),
+                OwnerId = reader.GetInt32(7),
+            };
         }
     }
 }

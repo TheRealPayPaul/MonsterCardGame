@@ -1,7 +1,9 @@
 ﻿using DTO;
 using MonsterCardGame.Middlewares;
 using MonsterCardGame.Models.DB;
+using MonsterCardGame.Models.PJWT;
 using MonsterCardGame.Repositories;
+using MonsterCardGame.Utilities;
 using Server;
 using Server.Attributes;
 using Server.Enums;
@@ -26,6 +28,24 @@ namespace MonsterCardGame.Controllers
                 return ResponseCode.NotFound;
 
             return user;
+        }
+
+        [HttpGet("stats")]
+        [ApplyMiddleware(nameof(AuthMiddleware))]
+        public static object GetStats([FromSession] TokenContent tokenContent)
+        {
+            if (tokenContent == null)
+                return ResponseCode.Unauthorized;
+
+            User? user = UserRepository.SelectById(tokenContent.UserId);
+            if (user == null)
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.InternalServerError,
+                    Content = "Could not select user with user id from session",
+                };
+
+            return Mapper.ToStats(user);
         }
     }
 }

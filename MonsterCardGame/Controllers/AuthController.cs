@@ -9,7 +9,7 @@ using Server.Enums;
 namespace MonsterCardGame.Controllers
 {
     [ApiController("auth")]
-    public static class AuthController
+    internal static class AuthController
     {
         public const int TTL_MINUTES = 120;
 

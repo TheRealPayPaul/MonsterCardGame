@@ -44,5 +44,16 @@ namespace MonsterCardGame.Utilities
                 Username = user.Username,
             };
         }
+
+        public static UserStatsDTO ToStats(User user)
+        {
+            return new UserStatsDTO()
+            {
+                Username = user.Username,
+                Elo = user.Elo,
+                Wins = user.Wins,
+                Losses = user.Losses,
+            };
+        }
     }
 }
