@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Server.Handlers
@@ -13,17 +14,24 @@ namespace Server.Handlers
         {
             Console.WriteLine($"[{(int)resObj.ResponseCode}]");
 
-            streamWriter.WriteLine($"HTTP/1.1 {(int)resObj.ResponseCode} {ResponseCodeConverter.EnumToString(resObj.ResponseCode)}");
-            streamWriter.WriteLine($"Server: {resObj.Server}");
-            streamWriter.WriteLine($"Date: {DateTime.Now}");
-            streamWriter.WriteLine($"Connection: {resObj.Connection}");
-            streamWriter.WriteLine($"Content-Length: {resObj.ContentLength}");
-            streamWriter.WriteLine($"Content-Type: {resObj.ContentType}");
-            streamWriter.WriteLine();
-            if (resObj.ContentLength > 0)
+            string response = string.Empty;
+            response += $"HTTP/1.1 {(int)resObj.ResponseCode} {ResponseCodeConverter.EnumToString(resObj.ResponseCode)}\n";
+            response += $"Server: {resObj.Server}\n";
+            response += $"Date: {DateTime.Now}\n";
+            response += $"Connection: {resObj.Connection}\n";
+            if (resObj.Content != null)
             {
-                streamWriter.WriteLine(resObj.Content);
+                string content = JsonSerializer.Serialize(resObj.Content);
+                response += $"Content-Length: {content.Length}\n";
+                response += $"Content-Type: {resObj.ContentType}\n\n";
+                response += $"{content}\n";
             }
+            else
+            {
+                response += "\n";
+            }
+
+            streamWriter.Write(response);
         }
     }
 }

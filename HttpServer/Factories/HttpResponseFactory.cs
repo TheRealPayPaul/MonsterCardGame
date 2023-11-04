@@ -21,25 +21,34 @@ namespace Server.Factories
                 ResponseCode = responseCode,
                 Server = SERVER_NAME,
                 Connection = DEFAULT_CONNECTION,
-                ContentLength = 0,
-                Content = string.Empty,
+                Content = null,
             };
         }
 
         public static HttpResponseObject Build(object? obj)
         {
-            ResponseCode responseCode = ResponseCode.Ok;
-            string content = string.Empty;
-
-            if (obj is ActionResult)
+            if (obj is HttpResponseObject)
             {
-                ActionResult result = (ActionResult)obj;
-                responseCode = result.ResponseCode;
-                obj = result.Content;
+                Console.WriteLine($"INFO [{nameof(HttpResponseFactory)}] trying to build {nameof(HttpResponseObject)} with {nameof(HttpResponseObject)}");
+                return (HttpResponseObject)obj;
             }
 
-            if (obj != null)
-                content = JsonSerializer.Serialize(obj);
+            ResponseCode responseCode = ResponseCode.Ok;
+            object? content = null;
+
+            if (obj is ActionResult result)
+            {
+                responseCode = result.ResponseCode;
+                content = result.Content;
+            }
+            else if (obj is ResponseCode code)
+            {
+                responseCode = code;
+            }
+            else
+            {
+                content = obj;
+            }
 
             return new()
             {
@@ -47,7 +56,6 @@ namespace Server.Factories
                 Server = SERVER_NAME,
                 Connection = DEFAULT_CONNECTION,
                 ContentType = DEFAULT_CONENT_TYPE,
-                ContentLength = content.Length,
                 Content = content,
             };
         }

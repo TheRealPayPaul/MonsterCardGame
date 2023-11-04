@@ -1,6 +1,6 @@
 ﻿using MonsterCardGame.Enums;
-using MonsterCardGame.Models;
-using MonsterCardGame.Uitilities;
+using MonsterCardGame.Models.DB;
+using MonsterCardGame.Utilities;
 using Npgsql;
 using System.Data;
 
@@ -14,46 +14,6 @@ namespace MonsterCardGame.Repositories
 
     internal static class CardRepository
     {
-        // Create already configured in DB and give them an Owner
-        public static bool CreateMultiple(IEnumerable<Card> cards, int ownerId)
-        {
-            using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
-            using IDbTransaction transaction = dbConnection.BeginTransaction();
-            using IDbCommand command = dbConnection.CreateCommand();
-
-            try
-            {
-                dbConnection.Open();
-
-                command.CommandText = "INSERT INTO cards (name, damage, element_type, card_type, description, fk_owner_id)" +
-                                      "VALUES (@name, @damage, @element_type, @card_type, @description, @fk_owner_id); SELECT SCOPE_IDENTITY();";
-
-                foreach (Card card in cards)
-                {
-                    RepositoryUtilities.AddParameter(command, "name", DbType.String, card.Name);
-                    RepositoryUtilities.AddParameter(command, "damage", DbType.Int32, card.Damage);
-                    RepositoryUtilities.AddParameter(command, "element_type", DbType.String, ElementTypeConverter.ToString(card.ElementType));
-                    RepositoryUtilities.AddParameter(command, "card_type", DbType.String, CardTypeConverter.ToString(card.Type));
-                    RepositoryUtilities.AddParameter(command, "description", DbType.String, card.Description);
-                    RepositoryUtilities.AddParameter(command, "fk_owner_id", DbType.Int32, ownerId);
-
-                    card.DeckPos = null;
-                    card.OwnerId = ownerId;
-                    card.Id = Convert.ToInt32(command.ExecuteScalar());
-                    command.Parameters.Clear();
-                }
-
-                transaction.Commit();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[{nameof(CardRepository)}] failed to insert all cards: {ex.Message}");
-                transaction.Rollback();
-                return false;
-            }
-        }
-
         // Select all cards of User
         // OnlyDeck Option: Select all cards if User in the current deck
         public static IEnumerable<Card> SelectAllOfUser(int ownerId, SelectOwnerOptions options = SelectOwnerOptions.None)

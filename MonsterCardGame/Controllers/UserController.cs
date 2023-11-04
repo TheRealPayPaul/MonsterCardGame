@@ -1,4 +1,8 @@
-﻿using Server;
+﻿using DTO;
+using MonsterCardGame.Middlewares;
+using MonsterCardGame.Models.DB;
+using MonsterCardGame.Repositories;
+using Server;
 using Server.Attributes;
 using Server.Enums;
 using System;
@@ -9,23 +13,19 @@ using System.Threading.Tasks;
 
 namespace MonsterCardGame.Controllers
 {
-    [ApiController("User")]
+    [ApiController("users")]
     internal static class UserController
     {
-        [HttpGet("{id}")]
-        [ApplyMiddleware("AuthMiddleware")]
-        public static object Get([RawHttpRequest] HttpRequestObject reqObj, [FromPath("id")] string id)
+        [HttpGet("{username}")]
+        [ApplyMiddleware(nameof(AuthMiddleware))]
+        public static object Get([FromPath("username")] string username)
         {
-            Console.WriteLine($"User Get id: {id} {reqObj.Path}");
-            return new ActionResult() { ResponseCode = ResponseCode.ImATeapot, Content = reqObj };
-        }
+            User? user = UserRepository.SelectByUsername(username);
 
-        [HttpPost]
-        [ApplyMiddleware("AuthMiddleware")]
-        public static void Post([RawHttpRequest] HttpRequestObject reqObj)
-        {
-            Console.WriteLine("User Post");
-            //return new HttpResponseObject() { ResponseCode = ResponseCode.ImATeapot };
+            if (user == null)
+                return ResponseCode.NotFound;
+
+            return user;
         }
     }
 }

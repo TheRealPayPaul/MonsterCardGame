@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Interfaces
+namespace Server.Attributes
 {
-    public interface IMiddleware
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public class FromSession : Attribute
     {
-        public object? Invoke(HttpRequestObject reqObj);
     }
 }

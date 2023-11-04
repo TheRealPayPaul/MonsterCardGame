@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DTO
+namespace MonsterCardGame.Models.DB
 {
-    public class UserStats
+    internal class User
     {
-        public string Name { get; set; }
+        public int Id { get; set; } = -1;
+        public string Username { get; set; } = string.Empty;
+        public int Coins { get; set; }
         public int Elo { get; set; }
         public int Wins { get; set; }
         public int Losses { get; set; }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonsterCardGame.Uitilities
+namespace MonsterCardGame.Utilities
 {
     internal static class RepositoryUtilities
     {

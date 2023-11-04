@@ -1,6 +1,6 @@
 ﻿using MonsterCardGame.Enums;
-using MonsterCardGame.Models;
-using MonsterCardGame.Uitilities;
+using MonsterCardGame.Models.DB;
+using MonsterCardGame.Utilities;
 using Npgsql;
 using System;
 using System.Collections.Generic;

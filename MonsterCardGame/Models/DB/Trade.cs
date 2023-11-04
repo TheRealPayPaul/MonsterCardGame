@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonsterCardGame.Models
+namespace MonsterCardGame.Models.DB
 {
     internal class Trade
     {

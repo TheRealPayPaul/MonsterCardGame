@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace MonsterCardGame.Uitilities
+namespace MonsterCardGame.Utilities
 {
     class PJWTHeader
     {

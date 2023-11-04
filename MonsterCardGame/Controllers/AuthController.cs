@@ -1,57 +1,41 @@
 ﻿using DTO;
-using MonsterCardGame.Models;
+using MonsterCardGame.Models.DB;
 using MonsterCardGame.Repositories;
-using MonsterCardGame.Uitilities;
+using MonsterCardGame.Utilities;
 using Server;
 using Server.Attributes;
 using Server.Enums;
 
 namespace MonsterCardGame.Controllers
 {
-    [ApiController("Auth")]
+    [ApiController("auth")]
     public static class AuthController
     {
-        public const int TTL_MINUTES = 10;
+        public const int TTL_MINUTES = 120;
 
-        [HttpPost("Login")]
-        public static object PostLogin([FromBody] UserCredentials credentials)
+        [HttpPost("login")]
+        public static object PostLogin([FromBody] UserCredentialsDTO credentials)
         {
-            try
-            {
-                User? user = UserRepository.SelectByCredentials(credentials.Username, credentials.Password);
-                if (user == null)
-                    return new ActionResult() { ResponseCode = ResponseCode.BadRequest };
+            User? user = UserRepository.SelectByCredentials(credentials.Username, credentials.Password);
+            if (user == null)
+                return new ActionResult() { ResponseCode = ResponseCode.BadRequest };
 
-                return PJWToken.CreateToken(user, DateTime.Now.AddMinutes(TTL_MINUTES), Program.PJWT_SECRET);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[{nameof(AuthController)}] Caught excpetion Login: {ex.Message}");
-                return new ActionResult() { ResponseCode = ResponseCode.InternalServerError };
-            }
+            return PJWToken.CreateToken(Mapper.ToTokenContent(user), DateTime.Now.AddMinutes(TTL_MINUTES), Program.PJWT_SECRET);
         }
 
-        [HttpPost("Register")]
-        public static object PostRegister([FromBody] UserCredentials credentials)
+        [HttpPost("register")]
+        public static object PostRegister([FromBody] UserCredentialsDTO credentials)
         {
-            try
-            {
-                if (credentials.Username.Length < 3)
-                    return new ActionResult() { ResponseCode = ResponseCode.BadRequest, Content = "Username must be at least 3 characters long" };
+            if (credentials.Username.Length < 3)
+                return new ActionResult() { ResponseCode = ResponseCode.BadRequest, Content = "Username must be at least 3 characters long" };
 
-                User? existingUser = UserRepository.SelectByUsername(credentials.Username);
-                if (existingUser != null)
-                    return new ActionResult() { ResponseCode = ResponseCode.BadRequest, Content = "Username already exists" };
+            User? existingUser = UserRepository.SelectByUsername(credentials.Username);
+            if (existingUser != null)
+                return new ActionResult() { ResponseCode = ResponseCode.Conflict, Content = "Username already exists" };
 
-                User user = UserRepository.Create(credentials.Username, credentials.Password, Program.STARTING_COIN_AMOUNT);
+            User user = UserRepository.Create(credentials.Username, credentials.Password, Program.STARTING_COIN_AMOUNT);
 
-                return PJWToken.CreateToken(user, DateTime.Now.AddMinutes(TTL_MINUTES), Program.PJWT_SECRET);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[{nameof(AuthController)}] Caught excpetion Register: {ex.Message}");
-                return new ActionResult() { ResponseCode = ResponseCode.InternalServerError };
-            }
+            return PJWToken.CreateToken(Mapper.ToTokenContent(user), DateTime.Now.AddMinutes(TTL_MINUTES), Program.PJWT_SECRET);
         }
     }
 }

@@ -15,6 +15,9 @@ namespace MonsterCardGame
         public const string CONNECTION_STRING = "Host=localhost;Database=MonsterCardGame;Username=admin;Password=admin;Persist Security Info=True";
         public const int STARTING_COIN_AMOUNT = 20;
         public const string PJWT_SECRET = "SuperSecret";
+        public const int MIN_DAMAGE = 40;
+        public const int MAX_DAMAGE = 90;
+        public const int PACKAGE_COST = 5;
 
         static void Main(string[] args)
         {

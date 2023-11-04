@@ -38,7 +38,7 @@ namespace Server
                     throw new InternalServerException($"[{nameof(EndpointChain)}] Middleware could not be instantiated!");
                 }
 
-                HttpResponseObject? midResObj = middleware.Item2.Invoke(instance, GetParameters(middleware.Item2, reqObj)) as HttpResponseObject;
+                object? midResObj = middleware.Item2.Invoke(instance, GetParameters(middleware.Item2, reqObj));
 
                 if (midResObj != null)
                     return midResObj; 
@@ -103,6 +103,13 @@ namespace Server
                     }
 
                     parameters[index] = JsonSerializer.Deserialize(value, parameterInfo.ParameterType);
+                    continue;
+                }
+
+                FromSession? fromSession = parameterInfo.GetCustomAttribute<FromSession>();
+                if (fromSession != null)
+                {
+                    parameters[index] = reqObj.SessionContent;
                     continue;
                 }
 
