@@ -15,31 +15,40 @@ using System.Threading.Tasks;
 namespace MonsterCardGame.Controllers
 {
     [ApiController("cards")]
-    internal static class CardsController
+    internal class CardsController
     {
+        private readonly CardRepository _cardRepository;
+        private readonly Mapper _mapper;
+
+        public CardsController()
+        {
+            _cardRepository = new CardRepository();
+            _mapper = new Mapper();
+        }
+
         [HttpGet]
         [ApplyMiddleware(nameof(AuthMiddleware))]
-        public static object GetCards([FromSession] TokenContent tokenContent)
+        public object GetCards([FromSession] TokenContent tokenContent)
         {
             if (tokenContent == null)
                 return ResponseCode.Unauthorized;
 
-            return Mapper.ToDTO(CardRepository.SelectAllOfUser(tokenContent.UserId).ToArray());
+            return _mapper.ToDTO(_cardRepository.SelectAllOfUser(tokenContent.UserId).ToArray());
         }
 
         [HttpGet("deck")]
         [ApplyMiddleware(nameof(AuthMiddleware))]
-        public static object GetDeck([FromSession] TokenContent tokenContent)
+        public object GetDeck([FromSession] TokenContent tokenContent)
         {
             if (tokenContent == null)
                 return ResponseCode.Unauthorized;
 
-            return Mapper.ToDTO(CardRepository.SelectAllOfUser(tokenContent.UserId, SelectOwnerOptions.OnlyDeck).ToArray());
+            return _mapper.ToDTO(_cardRepository.SelectAllOfUser(tokenContent.UserId, SelectOwnerOptions.OnlyDeck).ToArray());
         }
 
         [HttpPut("deck")]
         [ApplyMiddleware(nameof(AuthMiddleware))]
-        public static object PutDeck([FromSession] TokenContent tokenContent, [FromBody] int[] cardIds)
+        public object PutDeck([FromSession] TokenContent tokenContent, [FromBody] int[] cardIds)
         {
             if (tokenContent == null)
                 return ResponseCode.Unauthorized;
@@ -54,14 +63,14 @@ namespace MonsterCardGame.Controllers
             Card[] cards = new Card[Program.DECK_SIZE];
             for (int i = 0; i < Program.DECK_SIZE; i++)
             {
-                Card? card = CardRepository.SelectById(cardIds[i], tokenContent.UserId);
+                Card? card = _cardRepository.SelectById(cardIds[i], tokenContent.UserId);
                 if (card == null)
                     return ResponseCode.Forbidden;
 
                 cards[i] = card;
             }
 
-            return CardRepository.UpdateDeck(cards) ? ResponseCode.Ok : ResponseCode.Forbidden;
+            return _cardRepository.UpdateDeck(cards) ? ResponseCode.Ok : ResponseCode.Forbidden;
         }
     }
 }

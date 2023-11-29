@@ -11,15 +11,27 @@ using System.Threading.Tasks;
 
 namespace MonsterCardGame.Repositories
 {
-    internal static class CompositeRepository
+    internal class CompositeRepository
     {
-        public static bool TradeCards(int tradeId, Card toBeTradedCard)
+        private readonly TradeRepository _tradeRepository;
+
+        public CompositeRepository()
+        {
+            _tradeRepository = new TradeRepository();
+        }
+
+        public CompositeRepository(TradeRepository tradeRepository)
+        {
+            _tradeRepository = tradeRepository;
+        }
+
+        public bool TradeCards(int tradeId, Card toBeTradedCard)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbTransaction transaction = dbConnection.BeginTransaction();
             dbConnection.Open();
 
-            Trade? trade = TradeRepository.SelectById(tradeId);
+            Trade? trade = _tradeRepository.SelectById(tradeId);
             if (trade == null )
             {
                 transaction.Rollback();
@@ -69,7 +81,7 @@ namespace MonsterCardGame.Repositories
         }
 
         // Create given cards in DB give them to owner and take coins
-        public static bool BuyCards(IEnumerable<Card> cards, int cost, int ownerId)
+        public bool BuyCards(IEnumerable<Card> cards, int cost, int ownerId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             dbConnection.Open();

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace MonsterCardGame.Utilities
 {
-    internal static class Mapper
+    internal class Mapper
     {
-        public static CardDTO ToDTO(Card card)
+        public CardDTO ToDTO(Card card)
         {
             return new CardDTO()
             {
@@ -27,7 +27,7 @@ namespace MonsterCardGame.Utilities
             };
         }
 
-        public static CardDTO[] ToDTO(Card[] cards)
+        public CardDTO[] ToDTO(Card[] cards)
         {
             CardDTO[] cardsDTO = new CardDTO[cards.Length];
             for (int i = 0; i < cards.Length; i++)
@@ -36,7 +36,27 @@ namespace MonsterCardGame.Utilities
             return cardsDTO;
         }
 
-        public static TokenContent ToTokenContent(User user)
+        public TradeDTO ToDTO(Trade trade)
+        {
+            return new TradeDTO()
+            {
+                Id = trade.Id,
+                CardToTrade = ToDTO(trade.OfferedCard),
+                WantedCardType = CardTypeConverter.ToString(trade.OfferedCard.Type),
+                WantedMinDamage = trade.WantedMinDamage,
+            };
+        }
+
+        public TradeDTO[] ToDTO(Trade[] trades)
+        {
+            TradeDTO[] tradesDTO = new TradeDTO[trades.Length];
+            for (int i = 0; i < trades.Length; i++)
+                tradesDTO[i] = ToDTO(trades[i]);
+
+            return tradesDTO;
+        }
+
+        public TokenContent ToTokenContent(User user)
         {
             return new TokenContent()
             {
@@ -45,7 +65,7 @@ namespace MonsterCardGame.Utilities
             };
         }
 
-        public static UserStatsDTO ToStats(User user)
+        public UserStatsDTO ToStats(User user)
         {
             return new UserStatsDTO()
             {

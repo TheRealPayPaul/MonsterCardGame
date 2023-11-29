@@ -17,6 +17,18 @@ namespace MonsterCardGame.Middlewares
     [ApiMiddleware]
     internal class AuthMiddleware : IMiddleware
     {
+        private readonly PJWToken _pjwtoken;
+
+        public AuthMiddleware()
+        {
+            _pjwtoken = new PJWToken();
+        }
+
+        public AuthMiddleware(PJWToken pjwtoken)
+        {
+            _pjwtoken = pjwtoken;
+        }
+
         public object? Invoke([RawHttpRequest] HttpRequestObject reqObj)
         {
             string? authorizationValue;
@@ -44,7 +56,7 @@ namespace MonsterCardGame.Middlewares
 
             try
             {
-                if (!PJWToken.IsValid(authorizationValueFragments[1], Program.PJWT_SECRET))
+                if (!_pjwtoken.IsValid(authorizationValueFragments[1], Program.PJWT_SECRET))
                     return new ActionResult()
                     {
                         ResponseCode = ResponseCode.Unauthorized,
@@ -61,7 +73,7 @@ namespace MonsterCardGame.Middlewares
                 };
             }
 
-            reqObj.SessionContent = PJWToken.GetContent<TokenContent>(authorizationValueFragments[1]);
+            reqObj.SessionContent = _pjwtoken.GetContent<TokenContent>(authorizationValueFragments[1]);
 
             return null;
         }

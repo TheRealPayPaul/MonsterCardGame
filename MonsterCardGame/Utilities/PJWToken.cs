@@ -10,9 +10,9 @@ namespace MonsterCardGame.Utilities
         public DateTime TimeToLive { get; set; }
     }
 
-    public static class PJWToken
+    public class PJWToken
     {
-        public static string CreateToken(object content, DateTime ttl, string secret)
+        public string CreateToken(object content, DateTime ttl, string secret)
         {
             string header64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new PJWTHeader() { TimeToLive = ttl })));
             string content64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(content)));
@@ -27,7 +27,7 @@ namespace MonsterCardGame.Utilities
             return $"{header64}:{content64}:{checksum64}";
         }
 
-        public static bool IsValid(string token, string secret)
+        public bool IsValid(string token, string secret)
         {
             string[] fragments = token.Split(':');
             if (fragments.Count() < 3)
@@ -48,7 +48,7 @@ namespace MonsterCardGame.Utilities
             return DateTime.Now < header.TimeToLive;
         }
 
-        public static T? GetContent<T>(string token)
+        public T? GetContent<T>(string token)
         {
             string[] fragments = token.Split(':');
             if (fragments.Count() < 3)

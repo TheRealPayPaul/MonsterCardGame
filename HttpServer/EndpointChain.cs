@@ -45,7 +45,13 @@ namespace Server
             }
 
             // Endpoint
-            object? resObj = _endpoint.Item2.Invoke(null, GetParameters(_endpoint.Item2, reqObj));
+            object? controllerInstance = Activator.CreateInstance(_endpoint.Item1);
+            if (controllerInstance == null)
+            {
+                throw new InternalServerException($"[{nameof(EndpointChain)}] Controller ({nameof(_endpoint.Item1)}) could not be instantiated!");
+            }
+
+            object? resObj = _endpoint.Item2.Invoke(controllerInstance, GetParameters(_endpoint.Item2, reqObj));
 
             return resObj;
         }

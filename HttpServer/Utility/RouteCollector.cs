@@ -40,9 +40,10 @@ namespace Server.Utility
                     }
                     else if (attributeName == nameof(ApiController))
                     {
+                        // TODO potentially Remove
                         // Check if static ApiControllerClass
-                        if (!type.IsAbstract || !type.IsSealed)
-                            throw new InternalServerException($"[{nameof(RouteCollector)}] ApiController class is not static: {type.Name}");
+                        //if (!type.IsAbstract || !type.IsSealed)
+                        //    throw new InternalServerException($"[{nameof(RouteCollector)}] ApiController class is not static: {type.Name}");
 
                         apiControllers.Add(type);
                     }

@@ -13,11 +13,11 @@ namespace MonsterCardGame.Repositories
         OnlyDeck = 1,
     }
 
-    internal static class CardRepository
+    internal class CardRepository
     {
         // Select all cards of User
         // OnlyDeck Option: Select all cards if User in the current deck
-        public static IEnumerable<Card> SelectAllOfUser(int ownerId, SelectOwnerOptions options = SelectOwnerOptions.None)
+        public IEnumerable<Card> SelectAllOfUser(int ownerId, SelectOwnerOptions options = SelectOwnerOptions.None)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -57,7 +57,7 @@ namespace MonsterCardGame.Repositories
         }
 
         // Update Deck pos
-        public static bool UpdateDeck(Card[] newDeck)
+        public bool UpdateDeck(Card[] newDeck)
         {
             if (newDeck.Count() < 1)
                 throw new Exception($"[{nameof(CardRepository)}] Can't update deck. No cards given.");
@@ -108,7 +108,7 @@ namespace MonsterCardGame.Repositories
             }
         }
 
-        public static Card? SelectById(int cardId, int ownerId)
+        public Card? SelectById(int cardId, int ownerId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();

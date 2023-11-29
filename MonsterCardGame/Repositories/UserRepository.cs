@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace MonsterCardGame.Repositories
 {
-    internal static class UserRepository
+    internal class UserRepository
     {
-        public static User Create(string username, string password, int coins)
+        public User Create(string username, string password, int coins)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -33,7 +33,7 @@ namespace MonsterCardGame.Repositories
             return user;
         }
 
-        public static User? SelectById(int id)
+        public User? SelectById(int id)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -58,7 +58,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public static User? SelectByCredentials(string username, string password_hash)
+        public User? SelectByCredentials(string username, string password_hash)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -84,7 +84,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public static IEnumerable<User> SelectAll()
+        public IEnumerable<User> SelectAll()
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -110,7 +110,7 @@ namespace MonsterCardGame.Repositories
             return users;
         }
 
-        public static User? SelectByUsername(string username)
+        public User? SelectByUsername(string username)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();

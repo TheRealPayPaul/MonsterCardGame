@@ -13,7 +13,7 @@ namespace MonsterCardGame.Repositories
 {
     internal class TradeRepository
     {
-        public static IEnumerable<Trade> SelectAll()
+        public IEnumerable<Trade> SelectAll()
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -51,7 +51,7 @@ namespace MonsterCardGame.Repositories
             return trades;
         }
 
-        public static Trade? SelectById(int tradeId)
+        public Trade? SelectById(int tradeId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -88,7 +88,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public static bool Create(int cardIdToTrade, CardType wantedCardType, int wantedMinDamage)
+        public bool Create(int cardIdToTrade, CardType wantedCardType, int wantedMinDamage)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -104,7 +104,7 @@ namespace MonsterCardGame.Repositories
             return command.ExecuteNonQuery() > 0;
         }
 
-        public static bool Delete(int tradeId)
+        public bool Delete(int tradeId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -117,7 +117,7 @@ namespace MonsterCardGame.Repositories
             return command.ExecuteNonQuery() > 0;
         }
 
-        public static bool IsCardInTrade(int cardId)
+        public bool IsCardInTrade(int cardId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();

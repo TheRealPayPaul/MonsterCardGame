@@ -16,16 +16,31 @@ using System.Threading.Tasks;
 namespace MonsterCardGame.Controllers
 {
     [ApiController("transactions")]
-    internal static class TransactionController
+    internal class TransactionController
     {
+        private readonly UserRepository _userRepository;
+        private readonly CompositeRepository _compositeRepository;
+
+        public TransactionController()
+        {
+            _userRepository = new UserRepository();
+            _compositeRepository = new CompositeRepository();
+        }
+
+        public TransactionController(UserRepository userRepository, CompositeRepository compositeRepository)
+        {
+            _userRepository = userRepository;
+            _compositeRepository = compositeRepository;
+        }
+
         [HttpPost("packages")]
         [ApplyMiddleware(nameof(AuthMiddleware))]
-        public static object Packages([FromSession] TokenContent tokenContent)
+        public object Packages([FromSession] TokenContent tokenContent)
         {
             if (tokenContent == null)
                 return ResponseCode.Unauthorized;
 
-            User? user = UserRepository.SelectById(tokenContent.UserId);
+            User? user = _userRepository.SelectById(tokenContent.UserId);
             if (user == null)
                 return new ActionResult()
                 {
@@ -40,7 +55,7 @@ namespace MonsterCardGame.Controllers
             for (int i = 0; i < cards.Length; i++)
                 cards[i] = CardFactory.Random();
 
-            if (!CompositeRepository.BuyCards(cards, Program.PACKAGE_COST, tokenContent.UserId))
+            if (!_compositeRepository.BuyCards(cards, Program.PACKAGE_COST, tokenContent.UserId))
                 return new ActionResult()
                 {
                     ResponseCode = ResponseCode.InternalServerError,
