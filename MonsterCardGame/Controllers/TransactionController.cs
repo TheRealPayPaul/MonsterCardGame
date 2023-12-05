@@ -20,17 +20,23 @@ namespace MonsterCardGame.Controllers
     {
         private readonly UserRepository _userRepository;
         private readonly CompositeRepository _compositeRepository;
+        private readonly Mapper _mapper;
 
         public TransactionController()
         {
             _userRepository = new UserRepository();
             _compositeRepository = new CompositeRepository();
+            _mapper = new Mapper();
         }
 
-        public TransactionController(UserRepository userRepository, CompositeRepository compositeRepository)
+        public TransactionController(
+            UserRepository userRepository,
+            CompositeRepository compositeRepository,
+            Mapper mapper)
         {
             _userRepository = userRepository;
             _compositeRepository = compositeRepository;
+            _mapper = mapper;
         }
 
         [HttpPost("packages")]
@@ -62,7 +68,7 @@ namespace MonsterCardGame.Controllers
                     Content = "Could not perform necessary DB actions",
                 };
 
-            return cards;
+            return _mapper.ToDTO(cards);
         }
     }
 }

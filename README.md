@@ -8,5 +8,5 @@ TODO Routes
 - PUT /users/{username}
 - POST /packages
 
-LEFT OFF AT: 
-	Finished /stats
+
+CHECKEN OB KARTEN IM TRADE SIND WENN SIE IN DEN KAMPF ZIEHEN!!!!!
