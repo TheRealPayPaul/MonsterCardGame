@@ -31,7 +31,14 @@ namespace Server.Handlers
                 response += "\n";
             }
 
-            streamWriter.Write(response);
+            try
+            {
+                streamWriter.Write(response);
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("Client closed connection while server processed its request.");
+            }
         }
     }
 }

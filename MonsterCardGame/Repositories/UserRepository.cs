@@ -1,28 +1,24 @@
 ﻿using MonsterCardGame.Models.DB;
 using MonsterCardGame.Utilities;
 using Npgsql;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonsterCardGame.Repositories
 {
     internal class UserRepository
     {
-        public User Create(string username, string password, int coins)
+        public User Create(string username, string password, int coins, int elo)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
             dbConnection.Open();
 
-            command.CommandText = "INSERT INTO users (username, password, coins) VALUES (@username, @password, @coins) RETURNING user_id;";
+            command.CommandText = "INSERT INTO users (username, password, coins, elo) VALUES (@username, @password, @coins, @elo) RETURNING user_id;";
 
             RepositoryUtilities.AddParameter(command, "username", DbType.String, username);
             RepositoryUtilities.AddParameter(command, "password", DbType.String, password);
             RepositoryUtilities.AddParameter(command, "coins", DbType.Int32, coins);
+            RepositoryUtilities.AddParameter(command, "elo", DbType.Int32, elo);
 
             int userId = Convert.ToInt32(command.ExecuteScalar());
             User? user = SelectById(userId);

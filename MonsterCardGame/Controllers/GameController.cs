@@ -1,31 +1,33 @@
 ﻿using DTO;
+using MonsterCardGame.Game;
 using MonsterCardGame.Middlewares;
 using MonsterCardGame.Models.DB;
 using MonsterCardGame.Repositories;
 using MonsterCardGame.Utilities;
 using Server.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MonsterCardGame.Models.PJWT;
+using Server;
+using Server.Enums;
 
 namespace MonsterCardGame.Controllers
 {
     [ApiController("game")]
     internal class GameController
     {
+        private readonly CardRepository _cardRepository;
         private readonly UserRepository _userRepository;
         private readonly Mapper _mapper;
 
         public GameController()
         {
+            _cardRepository = new CardRepository();
             _userRepository = new UserRepository();
             _mapper = new Mapper();
         }
 
-        public GameController(UserRepository userRepository, Mapper mapper)
+        public GameController(CardRepository cardRepository, UserRepository userRepository, Mapper mapper)
         {
+            _cardRepository = cardRepository;
             _userRepository = userRepository;
             _mapper = mapper;
         }
@@ -43,6 +45,63 @@ namespace MonsterCardGame.Controllers
             }
 
             return scoreboardData;
+        }
+        
+        [HttpGet("battles")]
+        [ApplyMiddleware(nameof(AuthMiddleware))]
+        public object GetBattles([FromSession] TokenContent tokenContent)
+        {
+            if (tokenContent == null)
+                return ResponseCode.Unauthorized;
+
+            User? user = _userRepository.SelectById(tokenContent.UserId);
+            if (user == null)
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.InternalServerError,
+                    Content = "Could not select user with user id from session",
+                };
+
+            List<Card> deck = _cardRepository.SelectAllOfUser(user.Id, SelectOwnerOptions.OnlyDeck).ToList();
+
+
+            try
+            {
+                WaitingRoom waitingRoom = BattleOrganizer.Join(user, deck);
+                Task.WaitAny(waitingRoom.GameCompletion.Task, Task.Run(() => Task.Delay(Program.ROOM_WAITING_TIME_MS)));
+
+                if (!waitingRoom.GameCompletion.Task.IsCompleted)
+                {
+                    BattleOrganizer.RemoveWaitingRoom(waitingRoom);
+                    return new ActionResult()
+                    {
+                        ResponseCode = ResponseCode.TimeOut,
+                        Content = "Battle didn't start because of timeout",
+                    };
+                }
+                
+                BattleLog? battleLog = waitingRoom.GameCompletion.Task.Result;
+                if (battleLog == null)
+                    return new ActionResult()
+                    {
+                        ResponseCode = ResponseCode.InternalServerError,
+                        Content = "Battle didn't start because of exception",
+                    };
+                
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.Ok,
+                    Content = battleLog.GetList(),
+                };
+            }
+            catch (Exception e)
+            {
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.InternalServerError,
+                    Content = e.Message,
+                };
+            }
         }
     }
 }

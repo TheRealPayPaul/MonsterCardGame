@@ -3,10 +3,10 @@ using MonsterCardGame.Models.DB;
 using MonsterCardGame.Utilities;
 using Npgsql;
 using System.Data;
-using System.Reflection.PortableExecutable;
 
 namespace MonsterCardGame.Repositories
 {
+    [Flags]
     internal enum SelectOwnerOptions
     {
         None = 0,
@@ -16,7 +16,7 @@ namespace MonsterCardGame.Repositories
     internal class CardRepository
     {
         // Select all cards of User
-        // OnlyDeck Option: Select all cards if User in the current deck
+        // OnlyDeck Option: Selects only cards that are in the deck of the given user
         public IEnumerable<Card> SelectAllOfUser(int ownerId, SelectOwnerOptions options = SelectOwnerOptions.None)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);

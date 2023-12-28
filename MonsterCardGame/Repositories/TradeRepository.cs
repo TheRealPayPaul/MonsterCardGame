@@ -2,12 +2,8 @@
 using MonsterCardGame.Models.DB;
 using MonsterCardGame.Utilities;
 using Npgsql;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace MonsterCardGame.Repositories
 {
@@ -19,9 +15,9 @@ namespace MonsterCardGame.Repositories
             using IDbCommand command = dbConnection.CreateCommand();
             dbConnection.Open();
 
-            command.CommandText = "SELECT" +
-                                  "trade_id, wanted_card_type, wanted_min_damage, card_id, name, damage, element_type, card_type, description, user_id, username" +
-                                  "FROM trade_overviews";
+            command.CommandText = "SELECT " +
+                                  "trade_id, wanted_card_type, wanted_min_damage, card_id, name, damage, element_type, card_type, deck_pos, description, user_id, username" +
+                                  " FROM trade_overviews";
 
             List<Trade> trades = new();
             IDataReader reader = command.ExecuteReader();
@@ -34,9 +30,9 @@ namespace MonsterCardGame.Repositories
                     Damage = reader.GetInt32(5),
                     ElementType = ElementTypeConverter.ToEnum(reader.GetString(6)),
                     Type = CardTypeConverter.ToEnum(reader.GetString(7)),
-                    DeckPos = null,
-                    Description = reader.GetString(8),
-                    OwnerId = reader.GetInt32(9),
+                    DeckPos = reader.IsDBNull(8) ? null : reader.GetInt32(8),
+                    Description = reader.GetString(9),
+                    OwnerId = reader.GetInt32(10),
                 };
 
                 trades.Add(new Trade(offeredCard)
@@ -44,7 +40,7 @@ namespace MonsterCardGame.Repositories
                     Id = reader.GetInt32(0),
                     WantedCardType = CardTypeConverter.ToEnum(reader.GetString(1)),
                     WantedMinDamage = reader.GetInt32(2),
-                    TraderName = reader.GetString(10),
+                    TraderName = reader.GetString(11),
                 });
             }
 
@@ -57,9 +53,9 @@ namespace MonsterCardGame.Repositories
             using IDbCommand command = dbConnection.CreateCommand();
             dbConnection.Open();
 
-            command.CommandText = "SELECT" +
+            command.CommandText = "SELECT " +
                                   "trade_id, wanted_card_type, wanted_min_damage, card_id, name, damage, element_type, card_type, description, user_id, username" +
-                                  "FROM trade_overviews WHERE trade_id = @trade_id";
+                                  " FROM trade_overviews WHERE trade_id = @trade_id";
 
             RepositoryUtilities.AddParameter(command, "trade_id", DbType.Int32, tradeId);
 
@@ -94,7 +90,7 @@ namespace MonsterCardGame.Repositories
             using IDbCommand command = dbConnection.CreateCommand();
             dbConnection.Open();
 
-            command.CommandText = "INSERT INTO trades (fk_offered_card_id, wanted_card_type, wanted_min_damage)" +
+            command.CommandText = "INSERT INTO trades (fk_offered_card_id, wanted_card_type, wanted_min_damage) " +
                                   "VALUES (@fk_offered_card_id, @wanted_card_type, @wanted_min_damage)";
 
             RepositoryUtilities.AddParameter(command, "fk_offered_card_id", DbType.Int32, cardIdToTrade);

@@ -14,6 +14,7 @@ namespace Server.Enums
         Unauthorized = 401,
         Forbidden = 403,
         NotFound = 404,
+        TimeOut = 408,
         Conflict = 409,
         ImATeapot = 418,
         InternalServerError = 500,

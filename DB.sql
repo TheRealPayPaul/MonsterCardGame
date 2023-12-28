@@ -37,7 +37,7 @@ CREATE TABLE transactions (
 CREATE VIEW trade_overviews AS
 	SELECT
 		trades.trade_id, trades.wanted_card_type, trades.wanted_min_damage,
-		cards.card_id, cards.name, cards.damage, cards.element_type, cards.card_type, cards.description,
+		cards.card_id, cards.name, cards.damage, cards.element_type, cards.card_type, cards.deck_pos, cards.description,
 		users.user_id, users.username
 	FROM trades
 	JOIN cards ON card_id = trades.fk_offered_card_id

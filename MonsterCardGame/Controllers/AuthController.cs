@@ -52,7 +52,7 @@ namespace MonsterCardGame.Controllers
             if (existingUser != null)
                 return new ActionResult() { ResponseCode = ResponseCode.Conflict, Content = "Username already exists" };
 
-            User user = _userRepository.Create(credentials.Username, credentials.Password, Program.STARTING_COIN_AMOUNT);
+            User user = _userRepository.Create(credentials.Username, credentials.Password, Program.STARTING_COIN_AMOUNT, Program.STARTING_ELO_AMOUNT);
 
             return _pjwtoken.CreateToken(_mapper.ToTokenContent(user), DateTime.Now.AddMinutes(TTL_MINUTES), Program.PJWT_SECRET);
         }

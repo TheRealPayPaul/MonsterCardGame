@@ -68,6 +68,13 @@ namespace MonsterCardGame.Controllers
                     ResponseCode = ResponseCode.BadRequest,
                     Content = $"Given card '{createTradeDTO.Id}' is not owned by you or does not exist",
                 };
+            
+            if (card.DeckPos != null)
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.BadRequest,
+                    Content = $"Given card to trade is part of a deck",
+                };
 
             if (createTradeDTO.WantedMinDamage < 1)
                 return new ActionResult()
@@ -138,6 +145,13 @@ namespace MonsterCardGame.Controllers
                 {
                     ResponseCode = ResponseCode.BadRequest,
                     Content = $"Trade with id '{tradeId}' does not exist",
+                };
+            
+            if (trade.OfferedCard.OwnerId == tokenContent.UserId)
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.BadRequest,
+                    Content = $"You can't accept your own trades",
                 };
 
             Card? toTradeCard = _cardRepository.SelectById(toTradeCardId, tokenContent.UserId);

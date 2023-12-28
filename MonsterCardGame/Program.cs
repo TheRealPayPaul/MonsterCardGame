@@ -1,19 +1,15 @@
 ﻿using Server;
-using System.Drawing;
-using System.IO;
 using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace MonsterCardGame
 {
-    internal class Program
+    public class Program
     {
+        public const int ROOM_WAITING_TIME_MS = 30 * 1000; // Milliseconds
+        public const int MAX_LOOP_ITERATIONS_BATLLE = 100;
         public const string CONNECTION_STRING = "Host=localhost;Database=MonsterCardGame;Username=admin;Password=admin;Persist Security Info=True";
         public const int STARTING_COIN_AMOUNT = 20;
+        public const int STARTING_ELO_AMOUNT = 100;
         public const string PJWT_SECRET = "SuperSecret";
         public const int MIN_DAMAGE = 40;
         public const int MAX_DAMAGE = 90;

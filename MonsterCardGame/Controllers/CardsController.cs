@@ -60,6 +60,13 @@ namespace MonsterCardGame.Controllers
                     Content = $"Exactly {Program.DECK_SIZE} card_ids must be provided",
                 };
 
+            if (cardIds.Distinct().Count() != Program.DECK_SIZE)
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.BadRequest,
+                    Content = $"Deck holds at least one card multiple times",
+                };
+            
             Card[] cards = new Card[Program.DECK_SIZE];
             for (int i = 0; i < Program.DECK_SIZE; i++)
             {

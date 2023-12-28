@@ -8,17 +8,44 @@ namespace MonsterCardGame.Enums
 {
     public enum MonsterCatalog
     {
+        Undefined,
         Goblin,
         Troll,
         Elf,
         Knight,
         Dragon,
         Ork,
-        Kraken
+        Kraken,
+        Wizzard,
     }
 
     public static class MonsterCatalogConverter
     {
+        public static MonsterCatalog ToEnum(string name)
+        {
+            switch (name)
+            {
+                case "Goblin":
+                    return MonsterCatalog.Goblin;
+                case "Troll":
+                    return MonsterCatalog.Troll;
+                case "Elf":
+                    return MonsterCatalog.Elf;
+                case "Knight":
+                    return MonsterCatalog.Knight;
+                case "Dragon":
+                    return MonsterCatalog.Dragon;
+                case "Ork":
+                    return MonsterCatalog.Ork;
+                case "Kraken":
+                    return MonsterCatalog.Kraken;
+                case "Wizzard":
+                    return MonsterCatalog.Wizzard;
+                default:
+                    return MonsterCatalog.Undefined;
+            }
+        }
+        
         public static string ToString(MonsterCatalog monster)
         {
             switch (monster)
@@ -37,6 +64,8 @@ namespace MonsterCardGame.Enums
                     return "Ork";
                 case MonsterCatalog.Kraken:
                     return "Kraken";
+                case MonsterCatalog.Wizzard:
+                    return "Wizzard";
                 default:
                     return "Undefined";
             }
@@ -60,6 +89,8 @@ namespace MonsterCardGame.Enums
                     return "Brutish and relentless, Orcs are fierce warriors who thrive in harsh environments. They are known for their aggressive nature and tribal societies.";
                 case MonsterCatalog.Kraken:
                     return "Enormous and mysterious, Krakens dwell in the depths of the ocean. These tentacled sea monsters are said to bring terror to sailors with their immense power.";
+                case MonsterCatalog.Wizzard:
+                    return "A wise wizard in mystical robes and a crackling staff, guiding through arcane realms with ancient knowledge and potent spells.";
                 default:
                     return "Undefined";
             }

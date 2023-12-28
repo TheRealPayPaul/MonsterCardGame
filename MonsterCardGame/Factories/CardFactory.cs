@@ -1,10 +1,5 @@
 ﻿using MonsterCardGame.Enums;
 using MonsterCardGame.Models.DB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonsterCardGame.Factories
 {
@@ -38,7 +33,9 @@ namespace MonsterCardGame.Factories
         public static Card RandomMonster()
         {
             Random random = new();
-            MonsterCatalog[] monsters = Enum.GetValues<MonsterCatalog>();
+            MonsterCatalog[] monsters = Enum.GetValues<MonsterCatalog>()
+                .Where(catalog => catalog != MonsterCatalog.Undefined)
+                .ToArray();
             ElementType[] elementTypes = Enum.GetValues<ElementType>()
                 .Where(type => type != ElementType.Undefined)
                 .ToArray();
