@@ -61,7 +61,6 @@ namespace MonsterCardGame.Utilities
             return new TokenContent()
             {
                 UserId = user.Id,
-                Username = user.Username,
             };
         }
 

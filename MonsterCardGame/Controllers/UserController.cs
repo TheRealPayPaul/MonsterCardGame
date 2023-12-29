@@ -7,11 +7,6 @@ using MonsterCardGame.Utilities;
 using Server;
 using Server.Attributes;
 using Server.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonsterCardGame.Controllers
 {
@@ -43,6 +38,30 @@ namespace MonsterCardGame.Controllers
                 return ResponseCode.NotFound;
 
             return user;
+        }
+
+        [HttpPut]
+        [ApplyMiddleware(nameof(AuthMiddleware))]
+        public object Put([FromSession] TokenContent tokenContent, [FromBody] UserDataDTO userData)
+        {
+            if (tokenContent == null)
+                return ResponseCode.Unauthorized;
+            
+            if (_userRepository.SelectByUsername(userData.Username) != null)
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.BadRequest,
+                    Content = $"Username: {userData.Username} already taken",
+                };
+
+            if (!_userRepository.UpdateUsername(tokenContent.UserId, userData.Username))
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.InternalServerError,
+                    Content = $"Could not change user data",
+                };
+
+            return ResponseCode.Ok;
         }
 
         [HttpGet("stats")]

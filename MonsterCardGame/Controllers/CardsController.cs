@@ -6,24 +6,28 @@ using MonsterCardGame.Utilities;
 using Server;
 using Server.Attributes;
 using Server.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonsterCardGame.Controllers
 {
     [ApiController("cards")]
     internal class CardsController
     {
+        private readonly TradeRepository _tradeRepository;
         private readonly CardRepository _cardRepository;
         private readonly Mapper _mapper;
 
         public CardsController()
         {
+            _tradeRepository = new TradeRepository();
             _cardRepository = new CardRepository();
             _mapper = new Mapper();
+        }
+
+        public CardsController(TradeRepository tradeRepository, CardRepository cardRepository, Mapper mapper)
+        {
+            _tradeRepository = tradeRepository;
+            _cardRepository = cardRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -66,6 +70,16 @@ namespace MonsterCardGame.Controllers
                     ResponseCode = ResponseCode.BadRequest,
                     Content = $"Deck holds at least one card multiple times",
                 };
+
+            foreach (int cardId in cardIds)
+            {
+                if (_tradeRepository.IsCardInTrade(cardId))
+                    return new ActionResult()
+                    {
+                        ResponseCode = ResponseCode.BadRequest,
+                        Content = $"Card with id: '{cardId}' is in a trade",
+                    };
+            }
             
             Card[] cards = new Card[Program.DECK_SIZE];
             for (int i = 0; i < Program.DECK_SIZE; i++)

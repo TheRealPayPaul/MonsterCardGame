@@ -130,5 +130,19 @@ namespace MonsterCardGame.Repositories
                 Losses = reader.GetInt32(5),
             };
         }
+
+        public bool UpdateUsername(int userId, string newUsername)
+        {
+            using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
+            using IDbCommand command = dbConnection.CreateCommand();
+            dbConnection.Open();
+
+            command.CommandText = "UPDATE users SET username = @username WHERE user_id = @user_id";
+            
+            RepositoryUtilities.AddParameter(command, "username", DbType.String, newUsername);
+            RepositoryUtilities.AddParameter(command, "user_id", DbType.Int32, userId);
+
+            return command.ExecuteNonQuery() > 0;
+        }
     }
 }

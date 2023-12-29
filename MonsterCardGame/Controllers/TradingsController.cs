@@ -75,6 +75,13 @@ namespace MonsterCardGame.Controllers
                     ResponseCode = ResponseCode.BadRequest,
                     Content = $"Given card to trade is part of a deck",
                 };
+            
+            if (_tradeRepository.IsCardInTrade(card.Id))
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.BadRequest,
+                    Content = $"Given card is already in a trade",
+                };
 
             if (createTradeDTO.WantedMinDamage < 1)
                 return new ActionResult()

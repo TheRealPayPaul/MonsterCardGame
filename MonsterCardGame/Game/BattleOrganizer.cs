@@ -47,18 +47,15 @@ public static class BattleOrganizer
 
     public static void StartBattle(WaitingRoom room)
     {
-        lock (room)
+        try
         {
-            try
-            {
-                BattleManager battleManager = new(room);
-                battleManager.StartBattle();
-            }
-            catch (Exception e)
-            {
-               Console.WriteLine($"(BattleOrganizer) Exception occured: {e.Message}"); 
-               room.GameCompletion.SetResult(null);
-            }
+            BattleManager battleManager = new(room);
+            battleManager.StartBattle();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"(BattleOrganizer) Exception occured: {e.Message}"); 
+            room.GameCompletion.SetResult(null);
         }
     }
 
@@ -68,6 +65,14 @@ public static class BattleOrganizer
         if (room.IsRoomReady())
             return;
         
+        lock (_waitingRooms)
+        {
+            _waitingRooms.Remove(room);
+        }
+    }
+    
+    public static void RemoveWaitingRoomForce(WaitingRoom room)
+    {
         lock (_waitingRooms)
         {
             _waitingRooms.Remove(room);

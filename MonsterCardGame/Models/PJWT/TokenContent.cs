@@ -9,6 +9,5 @@ namespace MonsterCardGame.Models.PJWT
     internal class TokenContent
     {
         public int UserId { get; set; } = -1;
-        public string Username { get; set; } = string.Empty;
     }
 }

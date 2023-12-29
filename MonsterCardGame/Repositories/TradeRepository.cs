@@ -123,7 +123,8 @@ namespace MonsterCardGame.Repositories
 
             RepositoryUtilities.AddParameter(command, "fk_offered_card_id", DbType.Int32, cardId);
 
-            return command.ExecuteNonQuery() > 0;
+            IDataReader reader = command.ExecuteReader();
+            return reader.Read();
         }
     }
 }

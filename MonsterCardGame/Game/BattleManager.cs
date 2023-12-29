@@ -1,10 +1,13 @@
 using MonsterCardGame.Enums;
 using MonsterCardGame.Models.DB;
+using MonsterCardGame.Repositories;
 
 namespace MonsterCardGame.Game;
 
 public class BattleManager
 {
+    private readonly CompositeRepository _compositeRepository = new();
+    
     private WaitingRoom _waitingRoom;
     private BattleLog _battleLog = new();
     private TaskCompletionSource<BattleLog?> _gameCompletion;
@@ -39,12 +42,29 @@ public class BattleManager
             if (IsBattleOver())
                 break;
         }
+
+        bool dbUpdateQueryResult;
+        if (_deckPlayer1.Count < 1)
+        {
+            _battleLog.Log($"{_player2.Username} WON the battle", 999);
+            dbUpdateQueryResult = _compositeRepository.EndOfBattleNonDraw(_player1.Id, _player2.Id, _deckPlayer2);
+        }
+        else if (_deckPlayer2.Count < 1)
+        {
+            _battleLog.Log($"{_player1.Username} WON the battle", 999);
+            dbUpdateQueryResult = _compositeRepository.EndOfBattleNonDraw(_player2.Id, _player1.Id, _deckPlayer1);
+        }
+        else
+        {
+            _battleLog.Log($"Battle is a DRAW", 999);
+            dbUpdateQueryResult = _compositeRepository.EndOfBattleDraw(_player1.Id, _deckPlayer1, _player2.Id, _deckPlayer2);
+        }
+
+        if (!dbUpdateQueryResult)
+            throw new InvalidOperationException("Could not update DB entries after battle");
         
-        // Update decks in DB
-        // Update Elo and User Stats
-        // Determin winner/loser/draw and add to log
         _gameCompletion.SetResult(_battleLog);
-        BattleOrganizer.RemoveWaitingRoom(_waitingRoom);
+        BattleOrganizer.RemoveWaitingRoomForce(_waitingRoom);
     }
 
     private bool IsBattleOver()
@@ -56,6 +76,9 @@ public class BattleManager
     {
         Card cardPlayer1 = RandomCardFromDeck(_deckPlayer1);
         Card cardPlayer2 = RandomCardFromDeck(_deckPlayer2);
+        
+        _battleLog.Log($"{_player1.Username} Card: {cardPlayer1.Name}", _currentRound);
+        _battleLog.Log($"{_player2.Username} Card: {cardPlayer2.Name}", _currentRound);
 
         float cardPlayer1Dmg = CalculateCardDamage(cardPlayer1, cardPlayer2);
         float cardPlayer2Dmg = CalculateCardDamage(cardPlayer2, cardPlayer1);
@@ -101,7 +124,10 @@ public class BattleManager
      
         if (card.Type == CardType.Spell)
             if (opponentCardMonster == MonsterCatalog.Kraken)
+            {
+                _battleLog.Log("Kraken is immune to Spells", _currentRound);
                 return 0;
+            }
             else
                 return card.Damage;
         
@@ -109,18 +135,30 @@ public class BattleManager
             return 0;
 
         if (cardMonster == MonsterCatalog.Goblin && opponentCardMonster == MonsterCatalog.Dragon)
+        {
+            _battleLog.Log("Goblin is too scared to attack by Dragon", _currentRound);
             return 0;
-        
+        }
+
         if (cardMonster == MonsterCatalog.Ork && opponentCardMonster == MonsterCatalog.Wizzard)
+        {
+            _battleLog.Log("Ork isn't able to attack his overlord the Wizzard", _currentRound);
             return 0;
+        }
 
         if (cardMonster == MonsterCatalog.Knight && opponentCard.Type == CardType.Spell &&
             opponentCard.ElementType == ElementType.Water)
+        {
+            _battleLog.Log("Knight drowns in Water", _currentRound);
             return 0;
-        
+        }
+
         if (cardMonster == MonsterCatalog.Dragon && opponentCardMonster == MonsterCatalog.Elf &&
             opponentCard.ElementType == ElementType.Fire)
+        {
+            _battleLog.Log("FireElf evades old friend Dragon", _currentRound);
             return 0;
+        }
         
         return card.Damage;
     }
@@ -136,20 +174,21 @@ public class BattleManager
         if (card.Type == opponentCard.Type)
             return 1f;
 
-        if (card.ElementType == ElementType.Water && opponentCard.ElementType == ElementType.Fire)
+        if ( (card.ElementType == ElementType.Water && opponentCard.ElementType == ElementType.Fire) ||
+             (card.ElementType == ElementType.Fire && opponentCard.ElementType == ElementType.Normal) ||
+             (card.ElementType == ElementType.Normal && opponentCard.ElementType == ElementType.Water) )
+        {
+            _battleLog.Log($"{card.Name} has element advantage", _currentRound);
             return 2f;
-        if (card.ElementType == ElementType.Fire && opponentCard.ElementType == ElementType.Water)
+        }
+
+        if ( (card.ElementType == ElementType.Fire && opponentCard.ElementType == ElementType.Water) ||
+             (card.ElementType == ElementType.Normal && opponentCard.ElementType == ElementType.Fire) ||
+             (card.ElementType == ElementType.Water && opponentCard.ElementType == ElementType.Normal) )
+        {
+            _battleLog.Log($"{card.Name} has element disadvantage", _currentRound);
             return .5f;
-        
-        if (card.ElementType == ElementType.Fire && opponentCard.ElementType == ElementType.Normal)
-            return 2f;
-        if (card.ElementType == ElementType.Normal && opponentCard.ElementType == ElementType.Fire)
-            return .5f;
-        
-        if (card.ElementType == ElementType.Normal && opponentCard.ElementType == ElementType.Water)
-            return 2f;
-        if (card.ElementType == ElementType.Water && opponentCard.ElementType == ElementType.Normal)
-            return .5f;
+        }
 
         return 1f;
     }
