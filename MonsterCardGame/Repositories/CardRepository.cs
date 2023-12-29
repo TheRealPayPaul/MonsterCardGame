@@ -7,17 +7,17 @@ using System.Data;
 namespace MonsterCardGame.Repositories
 {
     [Flags]
-    internal enum SelectOwnerOptions
+    public enum SelectOwnerOptions
     {
         None = 0,
         OnlyDeck = 1,
     }
 
-    internal class CardRepository
+    public class CardRepository
     {
         // Select all cards of User
         // OnlyDeck Option: Selects only cards that are in the deck of the given user
-        public IEnumerable<Card> SelectAllOfUser(int ownerId, SelectOwnerOptions options = SelectOwnerOptions.None)
+        public virtual IEnumerable<Card> SelectAllOfUser(int ownerId, SelectOwnerOptions options = SelectOwnerOptions.None)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -57,7 +57,7 @@ namespace MonsterCardGame.Repositories
         }
 
         // Update Deck pos
-        public bool UpdateDeck(Card[] newDeck)
+        public virtual bool UpdateDeck(Card[] newDeck)
         {
             if (newDeck.Count() < 1)
                 throw new Exception($"[{nameof(CardRepository)}] Can't update deck. No cards given.");
@@ -108,7 +108,7 @@ namespace MonsterCardGame.Repositories
             }
         }
 
-        public Card? SelectById(int cardId, int ownerId)
+        public virtual Card? SelectById(int cardId, int ownerId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();

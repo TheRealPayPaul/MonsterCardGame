@@ -7,9 +7,9 @@ using System.Data;
 
 namespace MonsterCardGame.Repositories
 {
-    internal class TradeRepository
+    public class TradeRepository
     {
-        public IEnumerable<Trade> SelectAll()
+        public virtual IEnumerable<Trade> SelectAll()
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -47,7 +47,7 @@ namespace MonsterCardGame.Repositories
             return trades;
         }
 
-        public Trade? SelectById(int tradeId)
+        public virtual Trade? SelectById(int tradeId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -84,7 +84,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public bool Create(int cardIdToTrade, CardType wantedCardType, int wantedMinDamage)
+        public virtual bool Create(int cardIdToTrade, CardType wantedCardType, int wantedMinDamage)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -100,7 +100,7 @@ namespace MonsterCardGame.Repositories
             return command.ExecuteNonQuery() > 0;
         }
 
-        public bool Delete(int tradeId)
+        public virtual bool Delete(int tradeId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -113,7 +113,7 @@ namespace MonsterCardGame.Repositories
             return command.ExecuteNonQuery() > 0;
         }
 
-        public bool IsCardInTrade(int cardId)
+        public virtual bool IsCardInTrade(int cardId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();

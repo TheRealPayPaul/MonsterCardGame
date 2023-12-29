@@ -2,7 +2,7 @@
 
 namespace MonsterCardGame.Models.DB
 {
-    internal class Trade
+    public class Trade
     {
         public int Id { get; set; }
         public string TraderName { get; set; } = string.Empty;

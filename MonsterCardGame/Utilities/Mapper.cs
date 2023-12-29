@@ -5,9 +5,9 @@ using MonsterCardGame.Models.PJWT;
 
 namespace MonsterCardGame.Utilities
 {
-    internal class Mapper
+    public class Mapper
     {
-        public CardDTO ToDTO(Card card)
+        public virtual CardDTO ToDTO(Card card)
         {
             return new CardDTO()
             {
@@ -22,7 +22,7 @@ namespace MonsterCardGame.Utilities
             };
         }
 
-        public CardDTO[] ToDTO(Card[] cards)
+        public virtual CardDTO[] ToDTO(Card[] cards)
         {
             CardDTO[] cardsDTO = new CardDTO[cards.Length];
             for (int i = 0; i < cards.Length; i++)
@@ -31,7 +31,7 @@ namespace MonsterCardGame.Utilities
             return cardsDTO;
         }
 
-        public TradeDTO ToDTO(Trade trade)
+        public virtual TradeDTO ToDTO(Trade trade)
         {
             return new TradeDTO()
             {
@@ -42,7 +42,7 @@ namespace MonsterCardGame.Utilities
             };
         }
 
-        public TradeDTO[] ToDTO(Trade[] trades)
+        public virtual TradeDTO[] ToDTO(Trade[] trades)
         {
             TradeDTO[] tradesDTO = new TradeDTO[trades.Length];
             for (int i = 0; i < trades.Length; i++)
@@ -51,7 +51,7 @@ namespace MonsterCardGame.Utilities
             return tradesDTO;
         }
 
-        public TokenContent ToTokenContent(User user)
+        public virtual TokenContent ToTokenContent(User user)
         {
             return new TokenContent()
             {
@@ -59,7 +59,7 @@ namespace MonsterCardGame.Utilities
             };
         }
 
-        public UserStatsDTO ToStats(User user)
+        public virtual UserStatsDTO ToStats(User user)
         {
             return new UserStatsDTO()
             {

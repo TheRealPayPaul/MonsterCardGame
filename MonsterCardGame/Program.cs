@@ -15,6 +15,7 @@ namespace MonsterCardGame
         public const int MAX_DAMAGE = 90;
         public const int PACKAGE_COST = 5;
         public const int DECK_SIZE = 4;
+        public const int MIN_USERNAME_LENGTH = 3;
 
         static void Main(string[] args)
         {

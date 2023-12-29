@@ -5,9 +5,9 @@ using System.Data;
 
 namespace MonsterCardGame.Repositories
 {
-    internal class UserRepository
+    public class UserRepository
     {
-        public User Create(string username, string password, int coins, int elo)
+        public virtual User Create(string username, string password, int coins, int elo)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -29,7 +29,7 @@ namespace MonsterCardGame.Repositories
             return user;
         }
 
-        public User? SelectById(int id)
+        public virtual User? SelectById(int id)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -54,7 +54,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public User? SelectByCredentials(string username, string password_hash)
+        public virtual User? SelectByCredentials(string username, string password_hash)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -80,7 +80,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public IEnumerable<User> SelectAll()
+        public virtual IEnumerable<User> SelectAll()
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -106,7 +106,7 @@ namespace MonsterCardGame.Repositories
             return users;
         }
 
-        public User? SelectByUsername(string username)
+        public virtual User? SelectByUsername(string username)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -131,7 +131,7 @@ namespace MonsterCardGame.Repositories
             };
         }
 
-        public bool UpdateUsername(int userId, string newUsername)
+        public virtual bool UpdateUsername(int userId, string newUsername)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();
@@ -145,7 +145,7 @@ namespace MonsterCardGame.Repositories
             return command.ExecuteNonQuery() > 0;
         }
 
-        public bool SetCoins(int userId, int coins)
+        public virtual bool SetCoins(int userId, int coins)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             using IDbCommand command = dbConnection.CreateCommand();

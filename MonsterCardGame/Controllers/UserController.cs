@@ -11,7 +11,7 @@ using Server.Enums;
 namespace MonsterCardGame.Controllers
 {
     [ApiController("users")]
-    internal class UserController
+    public class UserController
     {
         private readonly UserRepository _userRepository;
         private readonly Mapper _mapper;
@@ -44,6 +44,13 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object Put([FromSession] TokenContent tokenContent, [FromBody] UserDataDTO userData)
         {
+            if (userData.Username.Length < Program.MIN_USERNAME_LENGTH)
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.BadRequest,
+                    Content = "Username must be at least 3 characters long",
+                };
+            
             if (_userRepository.SelectByUsername(userData.Username) != null)
                 return new ActionResult()
                 {
