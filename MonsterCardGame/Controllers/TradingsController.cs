@@ -12,7 +12,7 @@ using Server.Enums;
 namespace MonsterCardGame.Controllers
 {
     [ApiController("tradings")]
-    internal class TradingsController
+    public class TradingsController
     {
         private readonly TradeRepository _tradeRepository;
         private readonly CardRepository _cardRepository;

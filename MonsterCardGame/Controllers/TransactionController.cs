@@ -7,16 +7,11 @@ using MonsterCardGame.Utilities;
 using Server;
 using Server.Attributes;
 using Server.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonsterCardGame.Controllers
 {
     [ApiController("transactions")]
-    internal class TransactionController
+    public class TransactionController
     {
         private readonly UserRepository _userRepository;
         private readonly CompositeRepository _compositeRepository;

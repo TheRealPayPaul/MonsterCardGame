@@ -6,7 +6,7 @@ using System.Data;
 
 namespace MonsterCardGame.Repositories
 {
-    internal class CompositeRepository
+    public class CompositeRepository
     {
         private readonly TradeRepository _tradeRepository;
         private readonly UserRepository _userRepository;
@@ -23,7 +23,7 @@ namespace MonsterCardGame.Repositories
             _userRepository = userRepository;
         }
 
-        public bool TradeCards(int tradeId, Card toBeTradedCard)
+        public virtual bool TradeCards(int tradeId, Card toBeTradedCard)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             dbConnection.Open();
@@ -79,7 +79,7 @@ namespace MonsterCardGame.Repositories
         }
 
         // Create given cards in DB give them to owner and take coins
-        public bool BuyCards(IEnumerable<Card> cards, int cost, int ownerId)
+        public virtual bool BuyCards(IEnumerable<Card> cards, int cost, int ownerId)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             dbConnection.Open();
@@ -129,7 +129,7 @@ namespace MonsterCardGame.Repositories
             }
         }
 
-        public bool EndOfBattleNonDraw(int loserId, int winnerId, List<Card> winnerCards)
+        public virtual bool EndOfBattleNonDraw(int loserId, int winnerId, List<Card> winnerCards)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             dbConnection.Open();
@@ -201,7 +201,7 @@ namespace MonsterCardGame.Repositories
             return true;
         }
         
-        public bool EndOfBattleDraw(int player1Id, List<Card> player1Cards, int player2Id, List<Card> player2Cards)
+        public virtual bool EndOfBattleDraw(int player1Id, List<Card> player1Cards, int player2Id, List<Card> player2Cards)
         {
             using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
             dbConnection.Open();
