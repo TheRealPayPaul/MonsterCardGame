@@ -2,12 +2,7 @@
 using Server.Enums;
 using Server.Exceptions;
 using Server.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Server.Utility
 {
@@ -40,11 +35,6 @@ namespace Server.Utility
                     }
                     else if (attributeName == nameof(ApiController))
                     {
-                        // TODO potentially Remove
-                        // Check if static ApiControllerClass
-                        //if (!type.IsAbstract || !type.IsSealed)
-                        //    throw new InternalServerException($"[{nameof(RouteCollector)}] ApiController class is not static: {type.Name}");
-
                         apiControllers.Add(type);
                     }
                 }
@@ -87,7 +77,7 @@ namespace Server.Utility
 
                     parameters.methodAttributeType = typeof(HttpDelete);
                     parameters.requestMethod = RequestMethod.DELETE;
-                    if (BuildEndpointChain(parameters)) continue;
+                    BuildEndpointChain(parameters);
                 }
             }
         }

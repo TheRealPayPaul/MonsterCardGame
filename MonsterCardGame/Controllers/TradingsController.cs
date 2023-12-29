@@ -58,9 +58,6 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object PostNewTrade([FromBody] CreateTradeDTO createTradeDTO, [FromSession] TokenContent tokenContent)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-
             Card? card = _cardRepository.SelectById(createTradeDTO.CardToTradeId, tokenContent.UserId);
             if (card == null)
                 return new ActionResult()
@@ -112,9 +109,6 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object DeleteTrade([FromPath("tradeid")] int tradeId, [FromSession] TokenContent tokenContent)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-
             Trade? trade = _tradeRepository.SelectById(tradeId);
             if (trade == null)
                 return new ActionResult()
@@ -143,9 +137,6 @@ namespace MonsterCardGame.Controllers
             [FromBody] int toTradeCardId,
             [FromSession] TokenContent tokenContent)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-
             Trade? trade = _tradeRepository.SelectById(tradeId);
             if (trade == null)
                 return new ActionResult()

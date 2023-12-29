@@ -10,7 +10,7 @@ namespace MonsterCardGame.Models.DB
         public int Damage { get; set; }
         public ElementType ElementType { get; set; }
         public CardType Type { get; set; }
-        public int? DeckPos { get; set; } = null;
+        public int? DeckPos { get; set; }
         public string Description { get; set; } = string.Empty;
         public int OwnerId { get; set; } = -1;
     }

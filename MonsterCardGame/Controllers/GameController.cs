@@ -51,9 +51,6 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object GetBattles([FromSession] TokenContent tokenContent)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-
             User? user = _userRepository.SelectById(tokenContent.UserId);
             if (user == null)
                 return new ActionResult()

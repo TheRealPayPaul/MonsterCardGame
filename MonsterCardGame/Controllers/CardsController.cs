@@ -34,9 +34,6 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object GetCards([FromSession] TokenContent tokenContent)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-
             return _mapper.ToDTO(_cardRepository.SelectAllOfUser(tokenContent.UserId).ToArray());
         }
 
@@ -44,9 +41,6 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object GetDeck([FromSession] TokenContent tokenContent)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-
             return _mapper.ToDTO(_cardRepository.SelectAllOfUser(tokenContent.UserId, SelectOwnerOptions.OnlyDeck).ToArray());
         }
 
@@ -54,9 +48,6 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object PutDeck([FromSession] TokenContent tokenContent, [FromBody] int[] cardIds)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-
             if (cardIds.Length != Program.DECK_SIZE)
                 return new ActionResult()
                 {

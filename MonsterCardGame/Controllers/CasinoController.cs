@@ -27,9 +27,6 @@ internal class CasinoController
     [ApplyMiddleware(nameof(AuthMiddleware))]
     public object PostCoinflip([FromSession] TokenContent tokenContent, [FromBody] int amount)
     {
-        if (tokenContent == null)
-            return ResponseCode.Unauthorized;
-
         User? user = _userRepository.SelectById(tokenContent.UserId);
         if (user == null)
             return new ActionResult()

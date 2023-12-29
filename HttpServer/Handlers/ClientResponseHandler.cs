@@ -1,10 +1,5 @@
 ﻿using Server.Converter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Server.Handlers
 {
@@ -37,7 +32,7 @@ namespace Server.Handlers
             }
             catch (IOException e)
             {
-                Console.WriteLine("Client closed connection while server processed its request.");
+                Console.WriteLine($"Client closed connection while server processed its request. Exception: {e.Message}");
             }
         }
     }

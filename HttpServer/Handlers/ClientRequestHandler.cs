@@ -1,14 +1,7 @@
 ﻿using Server.Converter;
-using Server.Enums;
 using Server.Exceptions;
-using Server.Factories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Server.Handlers
 {
@@ -40,7 +33,7 @@ namespace Server.Handlers
             if (contentLengthHeader == null)
                 return (rawDataBuilder.ToString(), new char[0]);
 
-            int bodyLength = int.Parse(contentLengthHeader.Substring(15) ?? "0");
+            int bodyLength = int.Parse(contentLengthHeader.Substring(15));
 
             if (bodyLength < 1)
                 return (rawDataBuilder.ToString(), new char[0]);

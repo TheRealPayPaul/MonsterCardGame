@@ -44,9 +44,6 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object Put([FromSession] TokenContent tokenContent, [FromBody] UserDataDTO userData)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-            
             if (_userRepository.SelectByUsername(userData.Username) != null)
                 return new ActionResult()
                 {
@@ -68,9 +65,6 @@ namespace MonsterCardGame.Controllers
         [ApplyMiddleware(nameof(AuthMiddleware))]
         public object GetStats([FromSession] TokenContent tokenContent)
         {
-            if (tokenContent == null)
-                return ResponseCode.Unauthorized;
-
             User? user = _userRepository.SelectById(tokenContent.UserId);
             if (user == null)
                 return new ActionResult()

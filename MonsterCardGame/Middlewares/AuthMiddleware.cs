@@ -1,16 +1,9 @@
-﻿using MonsterCardGame.Models.DB;
-using MonsterCardGame.Models.PJWT;
+﻿using MonsterCardGame.Models.PJWT;
 using MonsterCardGame.Utilities;
 using Server;
 using Server.Attributes;
 using Server.Enums;
-using Server.Factories;
 using Server.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonsterCardGame.Middlewares
 {
