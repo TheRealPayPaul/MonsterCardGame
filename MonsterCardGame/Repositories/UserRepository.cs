@@ -144,5 +144,19 @@ namespace MonsterCardGame.Repositories
 
             return command.ExecuteNonQuery() > 0;
         }
+
+        public bool SetCoins(int userId, int coins)
+        {
+            using IDbConnection dbConnection = new NpgsqlConnection(Program.CONNECTION_STRING);
+            using IDbCommand command = dbConnection.CreateCommand();
+            dbConnection.Open();
+
+            command.CommandText = "UPDATE users SET coins = @coins WHERE user_id = @user_id";
+            
+            RepositoryUtilities.AddParameter(command, "coins", DbType.Int32, coins);
+            RepositoryUtilities.AddParameter(command, "user_id", DbType.Int32, userId);
+
+            return command.ExecuteNonQuery() > 0;
+        }
     }
 }
