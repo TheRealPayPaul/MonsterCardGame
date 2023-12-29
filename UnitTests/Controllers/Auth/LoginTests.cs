@@ -46,7 +46,7 @@ public class LoginTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Unauthorized) );
     }
     
     [Test]

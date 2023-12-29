@@ -113,7 +113,7 @@ public class DeckTests
         object result = _cardsController.PutDeck(tokenContent, cardIds);
         
         // Assert
-        Assert.IsInstanceOf<ResponseCode>(result);
-        Assert.That( (ResponseCode)result, Is.EqualTo(ResponseCode.Forbidden) );
+        Assert.IsInstanceOf<ActionResult>(result);
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
 }

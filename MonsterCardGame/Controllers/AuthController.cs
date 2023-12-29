@@ -37,7 +37,7 @@ namespace MonsterCardGame.Controllers
         {
             User? user = _userRepository.SelectByCredentials(credentials.Username, credentials.Password);
             if (user == null)
-                return new ActionResult() { ResponseCode = ResponseCode.BadRequest };
+                return new ActionResult() { ResponseCode = ResponseCode.Unauthorized };
 
             return _pjwtoken.CreateToken(_mapper.ToTokenContent(user), DateTime.Now.AddMinutes(TTL_MINUTES), Program.PJWT_SECRET);
         }

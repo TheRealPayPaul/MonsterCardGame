@@ -77,7 +77,11 @@ namespace MonsterCardGame.Controllers
             {
                 Card? card = _cardRepository.SelectById(cardIds[i], tokenContent.UserId);
                 if (card == null)
-                    return ResponseCode.Forbidden;
+                    return new ActionResult()
+                    {
+                        ResponseCode = ResponseCode.Forbidden,
+                        Content = $"At least one of the provided cards does not belong to the user or is not available.",
+                    };
 
                 cards[i] = card;
             }

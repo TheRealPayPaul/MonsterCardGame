@@ -52,7 +52,7 @@ public class TradingsTests
     }
 
     [Test]
-    public void PostNewTrade_BadRequest1()
+    public void PostNewTrade_Forbidden1()
     {
         // Arrange
         CreateTradeDTO createTradeDto = new() { CardToTradeId = 1 };
@@ -66,11 +66,11 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
     
     [Test]
-    public void PostNewTrade_BadRequest2()
+    public void PostNewTrade_Forbidden2()
     {
         // Arrange
         CreateTradeDTO createTradeDto = new() { CardToTradeId = 1 };
@@ -85,11 +85,11 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
     
     [Test]
-    public void PostNewTrade_BadRequest3()
+    public void PostNewTrade_Forbidden3()
     {
         // Arrange
         CreateTradeDTO createTradeDto = new() { CardToTradeId = 1 };
@@ -106,7 +106,7 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
     
     [Test]
@@ -194,11 +194,11 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ResponseCode>(result);
-        Assert.That((ResponseCode)result, Is.EqualTo(ResponseCode.Ok));
+        Assert.That((ResponseCode)result, Is.EqualTo(ResponseCode.Created));
     }
     
     [Test]
-    public void DeleteTrade_BadRequest1()
+    public void DeleteTrade_NotFound()
     {
         // Arrange
         TokenContent tokenContent = new() { UserId = 1 };
@@ -211,11 +211,11 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.NotFound) );
     }
     
     [Test]
-    public void DeleteTrade_BadRequest2()
+    public void DeleteTrade_Forbidden()
     {
         // Arrange
         TokenContent tokenContent = new() { UserId = 1 };
@@ -229,7 +229,7 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
     
     [Test]
@@ -273,7 +273,7 @@ public class TradingsTests
     }
 
     [Test]
-    public void PostAcceptTrade_BadRequest1()
+    public void PostAcceptTrade_NotFound()
     {
         // Arrange
         TokenContent tokenContent = new() { UserId = 1 };
@@ -286,11 +286,11 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.NotFound) );
     }
     
     [Test]
-    public void PostAcceptTrade_BadRequest2()
+    public void PostAcceptTrade_Forbidden1()
     {
         // Arrange
         TokenContent tokenContent = new() { UserId = 1 };
@@ -304,11 +304,11 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
     
     [Test]
-    public void PostAcceptTrade_BadRequest3()
+    public void PostAcceptTrade_Forbidden2()
     {
         // Arrange
         TokenContent tokenContent = new() { UserId = 1 };
@@ -324,11 +324,11 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
     
     [Test]
-    public void PostAcceptTrade_BadRequest4()
+    public void PostAcceptTrade_Forbidden3()
     {
         // Arrange
         TokenContent tokenContent = new() { UserId = 1 };
@@ -345,11 +345,11 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
     
     [Test]
-    public void PostAcceptTrade_BadRequest5()
+    public void PostAcceptTrade_Forbidden4()
     {
         // Arrange
         TokenContent tokenContent = new() { UserId = 1 };
@@ -366,7 +366,7 @@ public class TradingsTests
 
         // Assert
         Assert.IsInstanceOf<ActionResult>(result);
-        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.BadRequest) );
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.Forbidden) );
     }
     
     [Test]

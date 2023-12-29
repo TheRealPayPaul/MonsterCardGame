@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Pr
 	ProjectSection(SolutionItems) = preProject
 		DB.sql = DB.sql
 		README.md = README.md
+		Protokoll.docx = Protokoll.docx
+		Protokoll.pdf = Protokoll.pdf
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "HttpServer\Server.csproj", "{AA6E52C4-FB0A-46A8-9C92-094A704BFDB0}"

@@ -47,7 +47,11 @@ namespace MonsterCardGame.Controllers
                 };
 
             if (user.Coins < Program.PACKAGE_COST)
-                return ResponseCode.Forbidden;
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.Forbidden,
+                    Content = "Not enough money for buying a card package",
+                };
 
             Card[] cards = new Card[5];
             for (int i = 0; i < cards.Length; i++)
