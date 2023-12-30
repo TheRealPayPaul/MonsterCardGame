@@ -35,7 +35,11 @@ namespace MonsterCardGame.Controllers
             User? user = _userRepository.SelectByUsername(username);
 
             if (user == null)
-                return ResponseCode.NotFound;
+                return new ActionResult()
+                {
+                    ResponseCode = ResponseCode.NotFound,
+                    Content = $"User with name '{username}' not found",
+                };
 
             return user;
         }

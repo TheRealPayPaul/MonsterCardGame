@@ -1,4 +1,5 @@
-﻿using MonsterCardGame.Models.PJWT;
+﻿using System.Text.RegularExpressions;
+using MonsterCardGame.Models.PJWT;
 using MonsterCardGame.Utilities;
 using Server;
 using Server.Attributes;
@@ -47,9 +48,10 @@ namespace MonsterCardGame.Middlewares
                     Content = "Wrong 'Authorization' header schema. Wanted: 'Bearer'",
                 };
 
+            string unicodeEscapedAuthValue = Regex.Unescape(authorizationValueFragments[1]);
             try
             {
-                if (!_pjwtoken.IsValid(authorizationValueFragments[1], Program.PJWT_SECRET))
+                if (!_pjwtoken.IsValid(unicodeEscapedAuthValue, Program.PJWT_SECRET))
                     return new ActionResult()
                     {
                         ResponseCode = ResponseCode.Unauthorized,
@@ -66,7 +68,7 @@ namespace MonsterCardGame.Middlewares
                 };
             }
 
-            reqObj.SessionContent = _pjwtoken.GetContent<TokenContent>(authorizationValueFragments[1]);
+            reqObj.SessionContent = _pjwtoken.GetContent<TokenContent>(unicodeEscapedAuthValue);
 
             return null;
         }

@@ -47,9 +47,9 @@ namespace MonsterCardGame.Controllers
             return scoreboardData;
         }
         
-        [HttpGet("battles")]
+        [HttpPost("battles")]
         [ApplyMiddleware(nameof(AuthMiddleware))]
-        public object GetBattles([FromSession] TokenContent tokenContent)
+        public object PostBattles([FromSession] TokenContent tokenContent)
         {
             User? user = _userRepository.SelectById(tokenContent.UserId);
             if (user == null)

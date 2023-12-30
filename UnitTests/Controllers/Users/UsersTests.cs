@@ -41,8 +41,8 @@ public class UsersTests
         object result = _userController.Get(usernamePathVar);
 
         // Assert
-        Assert.IsInstanceOf<ResponseCode>(result);
-        Assert.That( (ResponseCode)result, Is.EqualTo(ResponseCode.NotFound) );
+        Assert.IsInstanceOf<ActionResult>(result);
+        Assert.That( ((ActionResult)result).ResponseCode, Is.EqualTo(ResponseCode.NotFound) );
     }
     
     [Test]

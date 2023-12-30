@@ -30,7 +30,7 @@ public class BattlesTests
     }
     
     [Test]
-    public void GetBattles_InternalServerError()
+    public void PostBattles_InternalServerError()
     {
         // Arrange
         TokenContent tokenContent = new() { UserId = 1 };
@@ -39,7 +39,7 @@ public class BattlesTests
             .Returns(null);
 
         // Act
-        object result = _gameController.GetBattles(tokenContent);
+        object result = _gameController.PostBattles(tokenContent);
 
         // Test
         Assert.IsInstanceOf<ActionResult>(result);
